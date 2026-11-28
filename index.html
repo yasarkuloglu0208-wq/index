@@ -1630,7 +1630,7 @@
                         </div>
                         <div>
                             <label for="inpIlIlceAltBaslik">Bölge / Tarih / Not</label>
-                            <input type="text" id="inpIlIlceAltBaslik" placeholder="Örn: Batı Karadeniz - Rakım 885 m">
+                            <input type="text" id="inpIlIlceAltBaslik" placeholder="">
                         </div>
                         <div>
                             <label for="selIlIlceRenk">İl / İlçe Sayfası Renk Teması</label>
@@ -1761,11 +1761,11 @@
                     <div class="form-grid">
                         <div>
                             <label for="inpSayfaBaslik">Köy Adı *</label>
-                            <input type="text" id="inpSayfaBaslik" placeholder="Örn: Ilgaz Köyü veya Yukarı Köy">
+                            <input type="text" id="inpSayfaBaslik" placeholder="">
                         </div>
                         <div>
                             <label for="inpSayfaAltBaslik">Bölge / Tarih / Not</label>
-                            <input type="text" id="inpSayfaAltBaslik" placeholder="Örn: Merkez Mevki - 27.11.2026">
+                            <input type="text" id="inpSayfaAltBaslik" placeholder="27.11.2026">
                         </div>
                         <div>
                             <label for="selSayfaRenk">Köy Sayfası Renk Teması</label>
@@ -4148,7 +4148,7 @@
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `arsiv_yedek_${bugunStr().replace(/\./g, '_')}.json`;
+        a.download = `yedek_${bugunStr().replace(/\./g, '_')}.json`;
         a.click();
         URL.revokeObjectURL(url);
     }
@@ -4231,3 +4231,4 @@
 
 </body>
 </html>
+     
