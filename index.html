@@ -1,0 +1,4233 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Çok Amaçlı Tanıtım ve Arşiv Sistemi</title>
+    <style>
+        :root {
+            --bg-body: #eef2f6;
+            --surface: #ffffff;
+            --surface-alt: #f8fafc;
+            --primary: #0f172a;
+            --primary-light: #1e293b;
+            --accent: #b45309;
+            --accent-soft: #fef3c7;
+            --text-main: #0f172a;
+            --text-muted: #475569;
+            --border: #cbd5e1;
+            --danger: #dc2626;
+            --star: #f59e0b;
+            --nav-h: 58px;
+            --font-scale: 1;
+        }
+
+        body.dark-theme {
+            --bg-body: #090d16;
+            --surface: #111827;
+            --surface-alt: #1f2937;
+            --primary: #030712;
+            --primary-light: #111827;
+            --accent: #fbbf24;
+            --accent-soft: rgba(251, 191, 36, 0.2);
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
+            --border: #374151;
+        }
+
+        /* SEKME BAZLI RENK VURGULARI */
+        body[data-aktif-sekme="tab-il-ilce"] {
+            --accent: #b45309;
+            --accent-soft: #fef3c7;
+        }
+        body[data-aktif-sekme="tab-sayfalar"] {
+            --accent: #0f766e;
+            --accent-soft: #ccfbf1;
+        }
+        body[data-aktif-sekme="tab-tanitim"] {
+            --accent: #1d4ed8;
+            --accent-soft: #dbeafe;
+        }
+        body[data-aktif-sekme="tab-arsiv"] {
+            --accent: #7c3aed;
+            --accent-soft: #ede9fe;
+        }
+
+        body.dark-theme[data-aktif-sekme="tab-il-ilce"] {
+            --accent: #fbbf24;
+            --accent-soft: rgba(251, 191, 36, 0.2);
+        }
+        body.dark-theme[data-aktif-sekme="tab-sayfalar"] {
+            --accent: #2dd4bf;
+            --accent-soft: rgba(45, 212, 191, 0.18);
+        }
+        body.dark-theme[data-aktif-sekme="tab-tanitim"] {
+            --accent: #3b82f6;
+            --accent-soft: rgba(59, 130, 246, 0.22);
+        }
+        body.dark-theme[data-aktif-sekme="tab-arsiv"] {
+            --accent: #a78bfa;
+            --accent-soft: rgba(167, 139, 250, 0.2);
+        }
+
+        /* KÖY VE İL İLÇE SAYFASI RENK TEMALARI */
+        .koy-tema-mavi {
+            --koy-vurgu: #1d4ed8;
+            --koy-zemin: #eff6ff;
+            --koy-kenar: #93c5fd;
+        }
+        .koy-tema-yesil {
+            --koy-vurgu: #15803d;
+            --koy-zemin: #f0fdf4;
+            --koy-kenar: #86efac;
+        }
+        .koy-tema-bordo {
+            --koy-vurgu: #991b1b;
+            --koy-zemin: #fef2f2;
+            --koy-kenar: #fca5a5;
+        }
+        .koy-tema-amber {
+            --koy-vurgu: #b45309;
+            --koy-zemin: #fffbeb;
+            --koy-kenar: #fcd34d;
+        }
+        .koy-tema-mor {
+            --koy-vurgu: #6d28d9;
+            --koy-zemin: #f5f3ff;
+            --koy-kenar: #c4b5fd;
+        }
+
+        body.dark-theme .koy-tema-mavi {
+            --koy-vurgu: #60a5fa;
+            --koy-zemin: rgba(37, 99, 235, 0.14);
+            --koy-kenar: rgba(96, 165, 250, 0.45);
+        }
+        body.dark-theme .koy-tema-yesil {
+            --koy-vurgu: #4ade80;
+            --koy-zemin: rgba(21, 128, 61, 0.16);
+            --koy-kenar: rgba(74, 222, 128, 0.45);
+        }
+        body.dark-theme .koy-tema-bordo {
+            --koy-vurgu: #f87171;
+            --koy-zemin: rgba(153, 27, 27, 0.18);
+            --koy-kenar: rgba(248, 113, 113, 0.45);
+        }
+        body.dark-theme .koy-tema-amber {
+            --koy-vurgu: #fbbf24;
+            --koy-zemin: rgba(180, 83, 9, 0.16);
+            --koy-kenar: rgba(251, 191, 36, 0.45);
+        }
+        body.dark-theme .koy-tema-mor {
+            --koy-vurgu: #c084fc;
+            --koy-zemin: rgba(109, 40, 217, 0.16);
+            --koy-kenar: rgba(192, 132, 252, 0.45);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html, body {
+            width: 100%;
+            max-width: 100vw;
+            height: 100vh;
+            height: 100dvh;
+            overflow: hidden;
+            overscroll-behavior: none;
+            touch-action: manipulation;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            font-size: calc(16px * var(--font-scale));
+        }
+
+        .app-shell {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            max-width: 980px;
+            height: 100%;
+            max-height: 100%;
+            margin: 0 auto;
+            background-color: var(--surface);
+            box-shadow: 0 0 25px rgba(0, 0, 0, 0.12);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* EN ÜST ANA BAŞLIK KISMI (SABİT + SLAYDER DESTEKLİ) */
+        .top-title-banner {
+            background: linear-gradient(135deg, #090d16 0%, #1e3a8a 100%);
+            color: #ffffff;
+            padding: 10px 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+            flex-shrink: 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+            min-width: 0;
+            width: 100%;
+        }
+
+        .banner-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-width: 0;
+            flex: 1;
+        }
+
+        .banner-slider-wrap {
+            position: relative;
+            width: 68px;
+            height: 50px;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 2px solid rgba(255, 255, 255, 0.35);
+            background: rgba(255, 255, 255, 0.1);
+            flex-shrink: 0;
+            display: none;
+            cursor: pointer;
+        }
+
+        .banner-slider-wrap.visible {
+            display: block;
+        }
+
+        .banner-slider-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .banner-slide-controls {
+            position: absolute;
+            inset: auto 0 0 0;
+            display: none;
+            justify-content: space-between;
+            background: rgba(0, 0, 0, 0.65);
+            padding: 1px 4px;
+        }
+
+        .banner-slide-controls.active {
+            display: flex;
+        }
+
+        .banner-slide-btn {
+            background: transparent;
+            border: none;
+            color: #ffffff;
+            font-size: 0.75rem;
+            font-weight: 700;
+            cursor: pointer;
+            line-height: 1.1;
+            padding: 1px 4px;
+        }
+
+        .title-texts {
+            min-width: 0;
+            flex: 1;
+        }
+
+        .main-site-title {
+            font-size: 1.08rem;
+            font-weight: 800;
+            letter-spacing: 0.3px;
+            line-height: 1.25;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .main-site-subtitle {
+            font-size: 0.76rem;
+            color: #cbd5e1;
+            margin-top: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .slide-caption-badge {
+            display: none;
+            margin-top: 4px;
+            font-size: 0.7rem;
+            color: #fde68a;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(253, 230, 138, 0.35);
+            border-radius: 6px;
+            padding: 2px 7px;
+            max-width: 100%;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            width: fit-content;
+        }
+
+        .slide-caption-badge.visible {
+            display: block;
+        }
+
+        .edit-title-btn {
+            background: #2563eb;
+            color: #ffffff;
+            border: 1px solid rgba(255, 255, 255, 0.35);
+            border-radius: 6px;
+            padding: 6px 9px;
+            font-size: 0.72rem;
+            font-weight: 600;
+            cursor: pointer;
+            flex-shrink: 0;
+            touch-action: manipulation;
+        }
+
+        /* BAŞLIK DÜZENLEME PANELİ */
+        .title-editor-box {
+            display: none;
+            background: var(--surface-alt);
+            border-bottom: 2px solid var(--accent);
+            padding: 12px 14px;
+            flex-shrink: 0;
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+            max-height: 55dvh;
+            overflow-y: auto;
+            overflow-x: hidden;
+            overscroll-behavior: contain;
+        }
+
+        .title-editor-box.active {
+            display: block;
+        }
+
+        .editor-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .editor-full {
+            grid-column: 1 / -1;
+        }
+
+        .header-img-preview-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .header-slide-item-card {
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 6px;
+            background: var(--surface);
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            min-width: 0;
+        }
+
+        .header-slide-thumb-box {
+            position: relative;
+            width: 100%;
+            height: 64px;
+        }
+
+        .header-slide-thumb-box img {
+            width: 100%;
+            height: 100%;
+            border-radius: 6px;
+            object-fit: cover;
+            border: 1px solid var(--border);
+        }
+
+        .header-slide-caption-inp {
+            padding: 5px 7px;
+            font-size: 0.76rem;
+        }
+
+        @media (max-width: 600px) {
+            .editor-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* İKİNCİ KATMAN: ARAÇ ÇUBUĞU */
+        .sub-header {
+            min-height: 44px;
+            background-color: var(--primary-light);
+            color: #ffffff;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            padding: 5px 10px;
+            flex-shrink: 0;
+            gap: 6px;
+            border-bottom: 1px solid var(--border);
+            width: 100%;
+            min-width: 0;
+        }
+
+        .brand-area {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            min-width: 0;
+            flex-wrap: wrap;
+            flex: 1 1 auto;
+        }
+
+        .brand-badge {
+            background: var(--accent);
+            color: #fff;
+            font-weight: 700;
+            padding: 3px 7px;
+            border-radius: 5px;
+            font-size: 0.72rem;
+            flex-shrink: 0;
+            cursor: pointer;
+            border: 1px solid rgba(255, 255, 255, 0.25);
+        }
+
+        .clock-badge {
+            background: rgba(255, 255, 255, 0.14);
+            color: #f8fafc;
+            font-family: monospace;
+            font-weight: 700;
+            padding: 3px 7px;
+            border-radius: 5px;
+            font-size: 0.72rem;
+            flex-shrink: 0;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .sub-header span.mode-label {
+            font-size: 0.76rem;
+            font-weight: 500;
+            color: #e2e8f0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            min-width: 0;
+        }
+
+        /* ÜST AYLIK TAKVİM ÇEKMECESİ */
+        .calendar-drawer {
+            display: none;
+            background: var(--surface-alt);
+            border-bottom: 2px solid var(--accent);
+            padding: 10px 12px;
+            flex-shrink: 0;
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+            max-height: 48dvh;
+            overflow-y: auto;
+            overflow-x: hidden;
+            overscroll-behavior: contain;
+        }
+
+        .calendar-drawer.active {
+            display: block;
+        }
+
+        .cal-top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+            flex-wrap: wrap;
+        }
+
+        .cal-month-title {
+            font-size: 0.88rem;
+            font-weight: 800;
+            color: var(--text-main);
+        }
+
+        .cal-nav-group {
+            display: flex;
+            gap: 5px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .cal-grid {
+            display: grid;
+            grid-template-columns: repeat(7, minmax(0, 1fr));
+            gap: 4px;
+            text-align: center;
+        }
+
+        .cal-weekday {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            padding: 3px 0;
+        }
+
+        .cal-day {
+            background: var(--surface);
+            color: var(--text-main);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 5px 2px;
+            font-size: 0.76rem;
+            font-weight: 600;
+            cursor: pointer;
+            min-width: 0;
+        }
+
+        .cal-day:hover {
+            border-color: var(--accent);
+            background: var(--accent-soft);
+        }
+
+        .cal-day.empty {
+            background: transparent;
+            border-color: transparent;
+            cursor: default;
+        }
+
+        .cal-day.today {
+            background: var(--accent);
+            color: #ffffff;
+            border-color: var(--accent);
+            font-weight: 800;
+        }
+
+        .cal-day.selected {
+            box-shadow: 0 0 0 2px var(--star);
+        }
+
+        .cal-footer-hint {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            margin-top: 6px;
+        }
+
+        .toolbar-controls {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            flex-wrap: wrap;
+            min-width: 0;
+        }
+
+        .tool-btn {
+            background: rgba(255, 255, 255, 0.12);
+            color: #ffffff;
+            border: 1px solid rgba(255, 255, 255, 0.22);
+            border-radius: 5px;
+            padding: 4px 7px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .tool-btn:hover {
+            background: rgba(255, 255, 255, 0.22);
+        }
+
+        .mode-select {
+            background: rgba(255, 255, 255, 0.14);
+            color: #ffffff;
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            border-radius: 5px;
+            padding: 4px 6px;
+            font-size: 0.7rem;
+            outline: none;
+            cursor: pointer;
+            max-width: 100%;
+        }
+
+        .mode-select option {
+            color: #0f172a;
+            background: #ffffff;
+        }
+
+        /* ORTA ALAN (SADECE BURASI DİKEY KAYDIRILIR, YATAY TAŞMA YOK) */
+        main {
+            flex: 1 1 auto;
+            min-height: 0;
+            width: 100%;
+            overflow-y: auto;
+            overflow-x: hidden;
+            overscroll-behavior-y: contain;
+            -webkit-overflow-scrolling: touch;
+            padding: 12px;
+        }
+
+        .tab-panel {
+            display: none;
+            flex-direction: column;
+            gap: 12px;
+            width: 100%;
+            min-width: 0;
+        }
+
+        .tab-panel.active {
+            display: flex;
+        }
+
+        /* KÖYLER SAYFASI YUKARI ORTA KÖY ADI BANNERİ */
+        .koy-top-center-banner {
+            text-align: center;
+            padding: 10px 14px;
+            border-radius: 10px;
+            border: 1px solid var(--koy-kenar, var(--border));
+            background: var(--koy-zemin, var(--surface-alt));
+            min-width: 0;
+        }
+
+        .koy-top-center-label {
+            font-size: 0.68rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: var(--text-muted);
+            margin-bottom: 2px;
+        }
+
+        .koy-top-center-title {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: var(--koy-vurgu, var(--accent));
+            line-height: 1.25;
+            overflow-wrap: anywhere;
+        }
+
+        /* GÖRSEL SIKIŞTIRMA AYAR ÇUBUĞU */
+        .img-opt-bar {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            background: var(--surface-alt);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 8px;
+            margin-bottom: 10px;
+            min-width: 0;
+        }
+
+        @media (max-width: 600px) {
+            .img-opt-bar {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .img-opt-hint {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        /* TANITIM VİTRİNİ */
+        .hero {
+            background: linear-gradient(135deg, #0f172a 0%, var(--accent) 100%);
+            color: #ffffff;
+            padding: 16px;
+            border-radius: 12px;
+            min-width: 0;
+        }
+
+        .hero-tag {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.18);
+            font-size: 0.7rem;
+            padding: 3px 9px;
+            border-radius: 12px;
+            margin-bottom: 8px;
+            letter-spacing: 0.4px;
+        }
+
+        .hero h2 {
+            font-size: 1.12rem;
+            margin-bottom: 6px;
+            overflow-wrap: anywhere;
+        }
+
+        .hero p {
+            font-size: 0.86rem;
+            line-height: 1.5;
+            opacity: 0.92;
+            margin-bottom: 10px;
+        }
+
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        @media (max-width: 600px) {
+            .stats-row {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        .stat-box {
+            background: rgba(255, 255, 255, 0.12);
+            padding: 8px;
+            border-radius: 8px;
+            text-align: center;
+            min-width: 0;
+        }
+
+        .stat-num {
+            font-size: 1.05rem;
+            font-weight: 700;
+            display: block;
+        }
+
+        .stat-lbl {
+            font-size: 0.7rem;
+            opacity: 0.85;
+        }
+
+        .category-summary-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 6px;
+        }
+
+        .cat-pill {
+            font-size: 0.74rem;
+            background: var(--surface-alt);
+            color: var(--text-main);
+            border: 1px solid var(--border);
+            border-radius: 999px;
+            padding: 4px 10px;
+            font-weight: 600;
+        }
+
+        /* KART VE FORM YAPISI */
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 12px;
+            min-width: 0;
+            max-width: 100%;
+        }
+
+        .card.editing-mode {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 2px var(--accent-soft);
+        }
+
+        .card-title {
+            font-size: 0.92rem;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .edit-badge {
+            font-size: 0.72rem;
+            background: #fef3c7;
+            color: #92400e;
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-weight: 700;
+            display: none;
+        }
+
+        .edit-badge.visible {
+            display: inline-block;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 10px;
+        }
+
+        @media (max-width: 600px) {
+            .form-grid {
+                grid-template-columns: minmax(0, 1fr);
+            }
+        }
+
+        .col-full {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            display: block;
+            font-size: 0.74rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            max-width: 100%;
+            min-width: 0;
+            padding: 8px 10px;
+            border: 1px solid var(--border);
+            border-radius: 7px;
+            font-size: 0.88rem;
+            background: var(--surface-alt);
+            color: var(--text-main);
+            outline: none;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            border-color: var(--accent);
+            background: var(--surface);
+        }
+
+        .btn-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        button.btn {
+            background: var(--accent);
+            color: #ffffff;
+            border: none;
+            padding: 8px 13px;
+            border-radius: 7px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            cursor: pointer;
+            max-width: 100%;
+        }
+
+        button.btn-sec {
+            background: var(--surface-alt);
+            color: var(--text-main);
+            border: 1px solid var(--border);
+        }
+
+        button.btn-danger {
+            background: #fee2e2;
+            color: var(--danger);
+            border: 1px solid #fecaca;
+        }
+
+        /* KÖY VE İL İLÇE SAYFALARI BÖLÜMÜ STİLLERİ */
+        .village-dropdown-row {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            margin-bottom: 4px;
+            min-width: 0;
+        }
+
+        .village-dropdown-row select {
+            flex: 1 1 auto;
+            min-width: 0;
+        }
+
+        .village-dropdown-row .btn {
+            flex-shrink: 0;
+        }
+
+        .multi-preview-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .multi-thumb-card {
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 6px;
+            background: var(--surface);
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            min-width: 0;
+        }
+
+        .multi-thumb-box {
+            position: relative;
+            width: 100%;
+            height: 76px;
+        }
+
+        .multi-thumb-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+        }
+
+        .remove-thumb-btn {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: none;
+            background: var(--danger);
+            color: #fff;
+            font-size: 0.72rem;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .page-reader-box {
+            border: 1px solid var(--koy-kenar, var(--border));
+            border-left: 5px solid var(--koy-vurgu, var(--accent));
+            border-radius: 10px;
+            padding: 14px;
+            background: var(--koy-zemin, var(--surface));
+            min-width: 0;
+        }
+
+        .page-reader-title {
+            font-size: 1.22rem;
+            font-weight: 800;
+            color: var(--koy-vurgu, var(--text-main));
+            margin-bottom: 6px;
+            text-align: center;
+            overflow-wrap: anywhere;
+        }
+
+        .page-reader-meta {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+            text-align: center;
+            overflow-wrap: anywhere;
+        }
+
+        .page-reader-text {
+            font-size: 0.92rem;
+            line-height: 1.6;
+            white-space: pre-line;
+            overflow-wrap: anywhere;
+            margin-bottom: 14px;
+        }
+
+        /* İL İLÇE VE KÖY DAR VE YÜKSEK OTOMATİK RESİM SLAYDERİ (600x500px) */
+        .page-slider-box {
+            border: 1px solid var(--koy-kenar, var(--border));
+            border-radius: 10px;
+            padding: 8px;
+            background: var(--surface);
+            margin-bottom: 14px;
+            width: 100%;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+            min-width: 0;
+        }
+
+     .page-slider-stage {
+            position: relative;
+            width: 100%;
+            height: 300px;
+            border-radius: 8px;
+            overflow: hidden;
+            background: #0b1120;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        @media (max-width: 540px) {
+            .page-slider-stage {
+                height: 380px;
+            }
+        }
+
+        .page-slider-stage img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            cursor: pointer;
+            display: block;
+			
+        }
+
+   @media (max-width: 540px) {
+            .page-slider-stage img {
+                max-height: 380px;
+            }
+        }
+
+        .page-slider-nav-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: 1px solid rgba(255, 255, 255, 0.35);
+            background: rgba(15, 23, 42, 0.72);
+            color: #ffffff;
+            font-size: 1.1rem;
+            font-weight: 700;
+            line-height: 1;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .page-slider-nav-btn.prev {
+            left: 8px;
+        }
+
+        .page-slider-nav-btn.next {
+            right: 8px;
+        }
+
+        .page-slider-counter {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: rgba(15, 23, 42, 0.78);
+            color: #ffffff;
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 999px;
+        }
+
+        .page-slider-footer {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-top: 8px;
+        }
+
+        .page-slider-caption {
+            font-size: 0.78rem;
+            color: var(--text-main);
+            line-height: 1.35;
+            overflow-wrap: anywhere;
+            text-align: center;
+        }
+
+        .page-slider-dots {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .page-slider-dot {
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+            border: none;
+            background: var(--border);
+            cursor: pointer;
+            padding: 0;
+        }
+
+        .page-slider-dot.active {
+            background: var(--koy-vurgu, var(--accent));
+            transform: scale(1.2);
+        }
+
+        .village-notes-box {
+            border-top: 1px solid var(--koy-kenar, var(--border));
+            padding-top: 12px;
+            margin-top: 8px;
+        }
+
+        .village-note-form {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .village-notes-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .village-note-item {
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 10px 12px;
+            background: var(--surface);
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 10px;
+            min-width: 0;
+        }
+
+        .village-note-date {
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: var(--koy-vurgu, var(--accent));
+            margin-bottom: 3px;
+        }
+
+        .village-note-text {
+            font-size: 0.84rem;
+            line-height: 1.45;
+            white-space: pre-line;
+            overflow-wrap: anywhere;
+        }
+
+        /* LİSTE KARTLARI */
+        .filter-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 10px;
+            min-width: 0;
+        }
+
+        .filter-row input {
+            flex: 1 1 160px;
+            min-width: 0;
+        }
+
+        .filter-row select {
+            flex: 0 1 170px;
+            min-width: 0;
+        }
+
+        @media (max-width: 600px) {
+            .filter-row select {
+                flex: 1 1 100%;
+                max-width: 100% !important;
+            }
+        }
+
+        .item-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .entry-card {
+            border: 1px solid var(--border);
+            border-left: 4px solid var(--accent);
+            border-radius: 8px;
+            padding: 10px;
+            background: var(--surface);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: flex-start;
+            min-width: 0;
+        }
+
+        .entry-card.is-fav {
+            border-left-color: var(--star);
+            background: rgba(245, 158, 11, 0.08);
+        }
+
+        .entry-thumb {
+            width: 64px;
+            height: 64px;
+            border-radius: 6px;
+            object-fit: cover;
+            border: 1px solid var(--border);
+            flex-shrink: 0;
+            cursor: pointer;
+        }
+
+        .entry-body {
+            flex: 1 1 180px;
+            min-width: 0;
+        }
+
+        .meta-line {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 5px;
+            margin-bottom: 5px;
+        }
+
+        .tag-id {
+            font-family: monospace;
+            font-size: 0.74rem;
+            background: var(--surface-alt);
+            border: 1px solid var(--border);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 700;
+        }
+
+        .tag-cat {
+            font-size: 0.72rem;
+            background: var(--accent-soft);
+            color: var(--accent);
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+
+        .tag-fav {
+            font-size: 0.72rem;
+            background: #fef3c7;
+            color: #b45309;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-weight: 700;
+        }
+
+        .tag-sub {
+            font-size: 0.74rem;
+            color: var(--text-muted);
+            font-weight: 500;
+            overflow-wrap: anywhere;
+        }
+
+        .entry-title {
+            font-size: 0.94rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+            color: var(--text-main);
+            overflow-wrap: anywhere;
+        }
+
+        .entry-text {
+            font-size: 0.84rem;
+            color: var(--text-muted);
+            line-height: 1.45;
+            white-space: pre-line;
+            overflow-wrap: anywhere;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .entry-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            flex-shrink: 0;
+        }
+
+        @media (max-width: 520px) {
+            .entry-actions {
+                flex-direction: row;
+                flex-wrap: wrap;
+                width: 100%;
+            }
+            .entry-actions .mini-btn {
+                flex: 1 1 auto;
+            }
+        }
+
+        .mini-btn {
+            padding: 5px 8px;
+            border-radius: 6px;
+            border: none;
+            font-size: 0.72rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .btn-fav {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .btn-fav.active {
+            background: #f59e0b;
+            color: #ffffff;
+        }
+
+        .btn-edit {
+            background: #ede9fe;
+            color: #5b21b6;
+        }
+
+        .btn-view {
+            background: #e0f2fe;
+            color: #0369a1;
+        }
+
+        .btn-del {
+            background: #fee2e2;
+            color: var(--danger);
+        }
+
+        /* ÖNE ÇIKAN VİTRİN LİSTESİ */
+        .showcase-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 10px;
+        }
+
+        .showcase-card {
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 10px;
+            background: var(--surface-alt);
+            min-width: 0;
+        }
+
+        .showcase-card.is-fav {
+            border-color: #f59e0b;
+            background: rgba(245, 158, 11, 0.08);
+        }
+
+        .showcase-card img {
+            width: 100%;
+            height: 110px;
+            object-fit: cover;
+            border-radius: 6px;
+            margin-bottom: 8px;
+        }
+
+        .showcase-card h4 {
+            font-size: 0.88rem;
+            margin: 4px 0;
+            overflow-wrap: anywhere;
+        }
+
+        .showcase-card p {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            white-space: pre-line;
+            overflow-wrap: anywhere;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        /* OKUMA PENCERESİ (MODAL) */
+        .modal-backdrop {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(9, 13, 22, 0.78);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+            padding: 12px;
+        }
+
+        .modal-backdrop.open {
+            display: flex;
+        }
+
+        .modal-box {
+            background: var(--surface);
+            color: var(--text-main);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            max-width: 640px;
+            width: 100%;
+            max-height: 85dvh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .modal-header {
+            padding: 10px 14px;
+            background: var(--primary);
+            color: #fff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+            min-width: 0;
+        }
+
+        .modal-actions {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-shrink: 0;
+        }
+
+        .modal-body {
+            padding: 14px;
+            overflow-y: auto;
+            overflow-x: hidden;
+            overscroll-behavior: contain;
+            line-height: 1.6;
+            font-size: 0.92rem;
+            white-space: pre-line;
+            overflow-wrap: anywhere;
+        }
+
+        .modal-body img {
+            max-width: 100%;
+            max-height: 60dvh;
+            object-fit: contain;
+            border-radius: 8px;
+            margin: 0 auto 12px auto;
+            display: block;
+        }
+
+        /* KİLİT EKRANI */
+        .lock-screen {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: #090d16;
+            color: #ffffff;
+            z-index: 10000;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+        }
+
+        .lock-screen.active {
+            display: flex;
+        }
+
+        .lock-card {
+            background: #111827;
+            border: 1px solid #374151;
+            border-radius: 14px;
+            padding: 22px 18px;
+            max-width: 380px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .lock-card h2 {
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+        }
+
+        .lock-card p {
+            font-size: 0.82rem;
+            color: #9ca3af;
+            margin-bottom: 14px;
+            line-height: 1.45;
+        }
+
+        .lock-card input {
+            text-align: center;
+            letter-spacing: 4px;
+            font-size: 1.05rem;
+            margin-bottom: 12px;
+        }
+
+        /* ALT MENÜ (SABİT) */
+        nav {
+            min-height: var(--nav-h);
+            padding-bottom: env(safe-area-inset-bottom, 0px);
+            background: var(--surface);
+            border-top: 1px solid var(--border);
+            display: flex;
+            flex-shrink: 0;
+            width: 100%;
+            min-width: 0;
+        }
+
+        .nav-btn {
+            flex: 1 1 0;
+            min-width: 0;
+            height: var(--nav-h);
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-size: 0.72rem;
+            font-weight: 600;
+            cursor: pointer;
+            padding: 0 3px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .nav-btn.active {
+            color: var(--accent);
+            border-top: 3px solid var(--accent);
+            background: var(--surface-alt);
+        }
+    </style>
+</head>
+<body data-aktif-sekme="tab-il-ilce">
+
+<!-- YEREL PIN / ŞİFRE KİLİT EKRANI -->
+<div class="lock-screen" id="kilitEkrani">
+    <div class="lock-card">
+        <h2 id="kilitBaslik">Uygulama Kilitli</h2>
+        <p id="kilitAciklama">Arşive erişmek için PIN kodunuzu girin.</p>
+        <input type="password" id="inpKilitPin" maxlength="12" placeholder="PIN / Şifre">
+        <button type="button" class="btn" style="width:100%; margin-bottom:8px;" id="btnKilitAc">Kilidi Aç</button>
+        <button type="button" class="btn btn-sec" style="width:100%; font-size:0.78rem;" id="btnPinSifirla">PIN Unuttum (Yerel Verileri Sıfırla)</button>
+    </div>
+</div>
+
+<div class="app-shell">
+    <!-- EN ÜST ANA BAŞLIK KISMI -->
+    <div class="top-title-banner">
+        <div class="banner-left">
+            <div class="banner-slider-wrap" id="bannerSliderWrap" title="Büyük Önizleme İçin Tıklayın">
+                <img id="bannerLogoImg" class="banner-slider-img" alt="Başlık Slayder Görseli">
+                <div class="banner-slide-controls" id="bannerSlideControls">
+                    <button type="button" class="banner-slide-btn" id="btnOncekiSlayt" title="Önceki Görsel">‹</button>
+                    <button type="button" class="banner-slide-btn" id="btnSonrakiSlayt" title="Sonraki Görsel">›</button>
+                </div>
+            </div>
+            <div class="title-texts">
+                <div class="main-site-title" id="anaBaslikMetin">DİJİTAL ARŞİV VE TANITIM PORTALI</div>
+                <div class="main-site-subtitle" id="altBaslikMetin"></div>
+                <div class="slide-caption-badge" id="slaytAltyaziRozet"></div>
+            </div>
+        </div>
+        <button type="button" class="edit-title-btn" id="btnBaslikAc">Başlığı Düzenle</button>
+    </div>
+
+    <!-- BAŞLIK VE SLAYDER DÜZENLEME PANELİ -->
+    <div class="title-editor-box" id="baslikEditorKutusu">
+        <div class="editor-grid">
+            <div>
+                <label for="inpAnaBaslikDuzenle">Ana Başlık *</label>
+                <input type="text" id="inpAnaBaslikDuzenle" placeholder="Örn: Kuloğlu Aile Arşivi">
+            </div>
+            <div>
+                <label for="inpAltBaslikDuzenle">Alt Başlık / Açıklama</label>
+                <input type="text" id="inpAltBaslikDuzenle" placeholder="Örn: Kitap, Belge ve Hatıra Kataloğu">
+            </div>
+            <div>
+                <label for="selSlaytSure">Slayder Geçiş Süresi</label>
+                <select id="selSlaytSure">
+                    <option value="2000">2 Saniye</option>
+                    <option value="3500">3.5 Saniye</option>
+                    <option value="5000">5 Saniye</option>
+                    <option value="8000">8 Saniye</option>
+                </select>
+            </div>
+            <div class="editor-full">
+                <label for="inpUstResim">Başlık Slayder Resimleri Seç (Kota Korumalı 480px Otomatik Sıkıştırılır)</label>
+                <input type="file" id="inpUstResim" accept="image/*" multiple>
+                <div class="header-img-preview-list" id="ustResimOnizlemeListesi"></div>
+                <button type="button" class="btn btn-danger" id="btnUstResimSil" style="padding:6px 10px; font-size:0.76rem; margin-top:8px; display:none;">Tüm Başlık Resimlerini Kaldır</button>
+            </div>
+        </div>
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            <button type="button" class="btn" id="btnBaslikKaydet">Kaydet ve Uygula</button>
+            <button type="button" class="btn btn-sec" id="btnBaslikIptal">Vazgeç</button>
+        </div>
+    </div>
+
+    <!-- İKİNCİ ÜST ÇUBUK (TARİH, CANLI SAAT VE TAKVİM TETİKLEYİCİ) -->
+    <header class="sub-header">
+        <div class="brand-area">
+            <button type="button" class="brand-badge" id="tarihRozet" title="Aylık Takvimi Aç / Kapat"></button>
+            <span class="clock-badge" id="saatRozet">--:--:--</span>
+            <span class="mode-label" id="siteBaslik">Kitap ve Belge Arşivi</span>
+        </div>
+        <div class="toolbar-controls">
+            <button type="button" class="tool-btn" id="btnTakvimAc" title="Aylık Takvimi Aç / Kapat">Takvim</button>
+            <button type="button" class="tool-btn" id="btnTemaDegistir" title="Koyu / Açık Tema">Koyu</button>
+            <button type="button" class="tool-btn" id="btnYaziKucult" title="Yazı Boyutunu Küçült">A-</button>
+            <button type="button" class="tool-btn" id="btnYaziBuyut" title="Yazı Boyutunu Büyüt">A+</button>
+            <button type="button" class="tool-btn" id="btnKilitYonet" title="PIN Kilit Ayarı">Kilit</button>
+            <select id="modSecici" class="mode-select">
+                <option value="belge">Mod: Belge / Kitap</option>
+                <option value="koleksiyon">Mod: Koleksiyon / Ürün</option>
+                <option value="siir">Mod: Şiir / Kişisel Not</option>
+            </select>
+        </div>
+    </header>
+
+    <!-- AYLIK TAKVİM ÇEKMECESİ -->
+    <div class="calendar-drawer" id="takvimCekmecesi">
+        <div class="cal-top-bar">
+            <div class="cal-month-title" id="takvimAyBaslik">Ay Yıl</div>
+            <div class="cal-nav-group">
+                <button type="button" class="tool-btn" style="color:var(--text-main); border-color:var(--border);" id="btnOncekiAy">‹ Önceki Ay</button>
+                <button type="button" class="tool-btn" style="color:var(--text-main); border-color:var(--border);" id="btnBugunAy">Bugün</button>
+                <button type="button" class="tool-btn" style="color:var(--text-main); border-color:var(--border);" id="btnSonrakiAy">Sonraki Ay ›</button>
+            </div>
+        </div>
+        <div class="cal-grid" id="takvimIzgara"></div>
+        <div class="cal-footer-hint" id="takvimSecimBilgi">Bir güne tıkladığınızda o tarih kayıt ve not tarih alanlarına otomatik yazılır.</div>
+    </div>
+
+    <!-- KAYDIRILABİLİR ANA BÖLÜM -->
+    <main>
+        <!-- 1. SEKME: İL / İLÇE TANITIM SAYFALARI -->
+        <section id="tab-il-ilce" class="tab-panel active">
+            <div class="page-reader-box koy-tema-amber" id="ilIlceOkumaKutusu" style="display:none;">
+                <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:10px; flex-wrap:wrap;">
+                    <button type="button" class="btn btn-sec" id="btnIlIlceListeyeDon">← İl İlçe Ekranına Dön</button>
+                    <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap;">
+                        <select id="selAcikIlIlceRenk" style="width:auto; padding:7px 9px; font-size:0.78rem;" title="Açık tanıtım sayfası rengi">
+                            <option value="mavi">Renk: Mavi</option>
+                            <option value="yesil">Renk: Yeşil</option>
+                            <option value="bordo">Renk: Bordo</option>
+                            <option value="amber">Renk: Kehribar</option>
+                            <option value="mor">Renk: Mor</option>
+                        </select>
+                        <button type="button" class="btn btn-sec" id="btnIlIlceSesliOku">Sesli Oku</button>
+                        <button type="button" class="btn btn-sec" id="btnAcikIlIlceDuzenle">Düzenle</button>
+                        <button type="button" class="btn btn-danger" id="btnAcikIlIlceSil">Sil</button>
+                    </div>
+                </div>
+                <div class="page-reader-title" id="okunanIlIlceBaslik"></div>
+                <div class="page-reader-meta" id="okunanIlIlceMeta"></div>
+                <div class="page-reader-text" id="okunanIlIlceMetin"></div>
+                <div class="page-reader-gallery" id="okunanIlIlceResimler"></div>
+
+                <div class="village-notes-box">
+                    <div class="card-title" style="margin-bottom:8px;">
+                        <span>Gezi ve Tanıtım Notları (<span id="ilIlceNotSayac">0</span>)</span>
+                    </div>
+                    <div class="village-note-form">
+                        <div class="form-grid">
+                            <div>
+                                <label for="inpIlIlceNotTarih">Not Tarihi </label>
+                                <input type="text" id="inpIlIlceNotTarih" maxlength="10" placeholder="GG.AA.YYYY">
+                            </div>
+                            <div class="col-full">
+                                <label for="inpIlIlceNotMetin">Tarihli Kısa Not / Gezi Gözlemi *</label>
+                                <textarea id="inpIlIlceNotMetin" rows="2" placeholder="Bu il veya ilçe hakkında tarihli kısa not yazın..."></textarea>
+                            </div>
+                        </div>
+                        <div>
+                            <button type="button" class="btn" id="btnIlIlceNotEkle">Not Ekle</button>
+                        </div>
+                    </div>
+                    <div class="village-notes-list" id="ilIlceNotlarListesi"></div>
+                </div>
+            </div>
+
+            <div id="ilIlceYonetimAlani">
+                <div class="card" id="ilIlceFormKarti">
+                    <div class="card-title">
+                        <span id="ilIlceFormBaslik">Yeni İl / İlçe Kayıt Ekle (Resim & Yazı)</span>
+                        <span class="edit-badge" id="ilIlceDuzenlemeRozet">TANITIM DÜZENLEME</span>
+                    </div>
+                    <div class="form-grid">
+                        <div>
+                            <label for="inpIlAdi">İl Adı *</label>
+                            <input type="text" id="inpIlAdi" placeholder="Örn: Çankırı veya Kocaeli">
+                        </div>
+                        <div>
+                            <label for="inpIlceAdi">İlçe Adı *</label>
+                            <input type="text" id="inpIlceAdi" placeholder="Örn: Ilgaz veya Darıca">
+                        </div>
+                        <div>
+                            <label for="inpIlIlceAltBaslik">Bölge / Tarih / Not</label>
+                            <input type="text" id="inpIlIlceAltBaslik" placeholder="Örn: Batı Karadeniz - Rakım 885 m">
+                        </div>
+                        <div>
+                            <label for="selIlIlceRenk">İl / İlçe Sayfası Renk Teması</label>
+                            <select id="selIlIlceRenk">
+                                <option value="mavi">Mavi Tema</option>
+                                <option value="yesil">Yeşil Tema</option>
+                                <option value="bordo">Bordo Tema</option>
+                                <option value="amber">Kehribar Tema</option>
+                                <option value="mor">Mor Tema</option>
+                            </select>
+                        </div>
+                        <div class="col-full">
+                            <div class="img-opt-bar">
+                                <div>
+                                    <label for="selIlIlceGorselGenislik">Yüklenen Resim Genişliği</label>
+                                    <select id="selIlIlceGorselGenislik" class="gorsel-genislik-sec">
+                                        <option value="480">480 px (Küçük - Az Hafıza)</option>
+                                        <option value="700">700 px (Standart)</option>
+                                        <option value="1024">1024 px (Yüksek Detay)</option>
+                                        <option value="1440">1440 px (Çok Yüksek)</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label for="selIlIlceGorselKalite">JPEG Sıkıştırma Kalitesi</label>
+                                    <select id="selIlIlceGorselKalite" class="gorsel-kalite-sec">
+                                        <option value="0.6">60% (Düşük Boyut)</option>
+                                        <option value="0.75">75% (Dengeli)</option>
+                                        <option value="0.8">80% (Varsayılan)</option>
+                                        <option value="0.9">90% (Yüksek Kalite)</option>
+                                    </select>
+                                </div>
+                                <div class="col-full img-opt-hint">Seçilen genişlik ve kalite değeri tüm yeni yüklenen resimlere uygulanır.</div>
+                            </div>
+                            <label for="inpIlIlceResimleri">İl / İlçe Sayfasına Resim / Fotoğraf Ekle (Her Resme Ayrı Açıklama Girebilirsiniz)</label>
+                            <input type="file" id="inpIlIlceResimleri" accept="image/*" multiple>
+                            <div class="multi-preview-list" id="ilIlceResimOnizlemeleri"></div>
+                        </div>
+                        <div class="col-full">
+                            <label for="inpIlIlceMetin">İl / İlçe Yazısı / Tarihçe ve Gezi Notları *</label>
+                            <textarea id="inpIlIlceMetin" rows="5" placeholder="İl veya ilçe hakkında yazı, tarihçe, gezilecek yerler veya fotoğraf notlarını yazın..."></textarea>
+                        </div>
+                    </div>
+                    <div class="btn-group">
+                        <button type="button" class="btn" id="btnIlIlceKaydet">İl / İlçe Kaydını Ekle</button>
+                        <button type="button" class="btn btn-sec" id="btnIlIlceIptal" style="display:none;">Düzenlemeyi İptal</button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">
+                        <span>İl İlçe Hızlı Erişim • <span id="ilIlceSayac">0</span> Sayfa</span>
+                    </div>
+                    <div class="village-dropdown-row">
+                        <select id="selIlIlceSecAc" aria-label="İl veya ilçe seç">
+                            <option value="">Hızlı açmak için il / ilçe seçin...</option>
+                        </select>
+                        <button type="button" class="btn" id="btnSeciliIlIlceAc">Sayfayı Aç</button>
+                    </div>
+                    <div class="filter-row" style="margin-top:10px; margin-bottom:0;">
+                        <input type="text" id="inpIlIlceArama" placeholder="İl, ilçe veya yazılarda ara...">
+                        <select id="selIlIlceSirala">
+                            <option value="YENI">Sırala: Son Eklenen</option>
+                            <option value="AZ">Sırala: İl / İlçe (A - Z)</option>
+                            <option value="ZA">Sırala: İl / İlçe (Z - A)</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. SEKME: KÖY SAYFALARI (RESİM VE YAZI DESTEKLİ) -->
+        <section id="tab-sayfalar" class="tab-panel">
+            <div class="koy-top-center-banner koy-tema-mavi" id="koyUstOrtaBaslikKutusu">
+                <div class="koy-top-center-label" id="koyUstOrtaEtiket">KÖYLER SAYFASI</div>
+                <div class="koy-top-center-title" id="koyUstOrtaBaslik">Köyler</div>
+            </div>
+
+            <div class="page-reader-box koy-tema-mavi" id="sayfaOkumaKutusu" style="display:none;">
+                <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:10px; flex-wrap:wrap;">
+                    <button type="button" class="btn btn-sec" id="btnSayfaListeyeDon">← Köyler Ekranına Dön</button>
+                    <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap;">
+                        <select id="selAcikKoyRenk" style="width:auto; padding:7px 9px; font-size:0.78rem;" title="Açık köy sayfası rengi">
+                            <option value="mavi">Renk: Mavi</option>
+                            <option value="yesil">Renk: Yeşil</option>
+                            <option value="bordo">Renk: Bordo</option>
+                            <option value="amber">Renk: Kehribar</option>
+                            <option value="mor">Renk: Mor</option>
+                        </select>
+                        <button type="button" class="btn btn-sec" id="btnSayfaSesliOku">Sesli Oku</button>
+                        <button type="button" class="btn btn-sec" id="btnAcikSayfaDuzenle">Düzenle</button>
+                        <button type="button" class="btn btn-danger" id="btnAcikSayfaSil">Sil</button>
+                    </div>
+                </div>
+                <div class="page-reader-title" id="okunanSayfaBaslik"></div>
+                <div class="page-reader-meta" id="okunanSayfaMeta"></div>
+                <div class="page-reader-text" id="okunanSayfaMetin"></div>
+                <div class="page-reader-gallery" id="okunanSayfaResimler"></div>
+
+                <div class="village-notes-box">
+                    <div class="card-title" style="margin-bottom:8px;">
+                        <span>Köy Notları ve Hatıralar (<span id="koyNotSayac">0</span>)</span>
+                    </div>
+                    <div class="village-note-form">
+                        <div class="form-grid">
+                            <div>
+                                <label for="inpKoyNotTarih">Not Tarihi</label>
+                                <input type="text" id="inpKoyNotTarih" maxlength="10" placeholder="GG.AA.YYYY">
+                            </div>
+                            <div class="col-full">
+                                <label for="inpKoyNotMetin">Tarihli Kısa Not / Hatıra *</label>
+                                <textarea id="inpKoyNotMetin" rows="2" placeholder="Bu köyle ilgili tarihli kısa not veya hatıra yazın..."></textarea>
+                            </div>
+                        </div>
+                        <div>
+                            <button type="button" class="btn" id="btnKoyNotEkle">Not Ekle</button>
+                        </div>
+                    </div>
+                    <div class="village-notes-list" id="koyNotlarListesi"></div>
+                </div>
+            </div>
+
+            <div id="sayfaYonetimAlani">
+                <div class="card" id="sayfaFormKarti">
+                    <div class="card-title">
+                        <span id="sayfaFormBaslik">Yeni Köy Sayfası Ekle (Resim & Yazı)</span>
+                        <span class="edit-badge" id="sayfaDuzenlemeRozet">KÖY DÜZENLEME</span>
+                    </div>
+                    <div class="form-grid">
+                        <div>
+                            <label for="inpSayfaBaslik">Köy Adı *</label>
+                            <input type="text" id="inpSayfaBaslik" placeholder="Örn: Ilgaz Köyü veya Yukarı Köy">
+                        </div>
+                        <div>
+                            <label for="inpSayfaAltBaslik">Bölge / Tarih / Not</label>
+                            <input type="text" id="inpSayfaAltBaslik" placeholder="Örn: Merkez Mevki - 27.11.2026">
+                        </div>
+                        <div>
+                            <label for="selSayfaRenk">Köy Sayfası Renk Teması</label>
+                            <select id="selSayfaRenk">
+                                <option value="mavi">Mavi Tema</option>
+                                <option value="yesil">Yeşil Tema</option>
+                                <option value="bordo">Bordo Tema</option>
+                                <option value="amber">Kehribar Tema</option>
+                                <option value="mor">Mor Tema</option>
+                            </select>
+                        </div>
+                        <div class="col-full">
+                            <div class="img-opt-bar">
+                                <div>
+                                    <label for="selGorselGenislik">Yüklenen Resim Genişliği</label>
+                                    <select id="selGorselGenislik" class="gorsel-genislik-sec">
+                                        <option value="480">480 px (Küçük - Az Hafıza)</option>
+                                        <option value="700">700 px (Standart)</option>
+                                        <option value="1024">1024 px (Yüksek Detay)</option>
+                                        <option value="1440">1440 px (Çok Yüksek)</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label for="selGorselKalite">JPEG Sıkıştırma Kalitesi</label>
+                                    <select id="selGorselKalite" class="gorsel-kalite-sec">
+                                        <option value="0.6">60% (Düşük Boyut)</option>
+                                        <option value="0.75">75% (Dengeli)</option>
+                                        <option value="0.8">80% (Varsayılan)</option>
+                                        <option value="0.9">90% (Yüksek Kalite)</option>
+                                    </select>
+                                </div>
+                                <div class="col-full img-opt-hint">Seçilen genişlik ve kalite değeri tüm yeni yüklenen resimlere uygulanır.</div>
+                            </div>
+                            <label for="inpSayfaResimleri">Köy Sayfasına Resim / Fotoğraf Ekle (Her Resme Ayrı Açıklama Girebilirsiniz)</label>
+                            <input type="file" id="inpSayfaResimleri" accept="image/*" multiple>
+                            <div class="multi-preview-list" id="sayfaResimOnizlemeleri"></div>
+                        </div>
+                        <div class="col-full">
+                            <label for="inpSayfaMetin">Köy Yazısı / Tarihi ve Hatıralar *</label>
+                            <textarea id="inpSayfaMetin" rows="5" placeholder="Köy hakkında yazı, tarihçe, gelenek veya fotoğraf notlarını yazın..."></textarea>
+                        </div>
+                    </div>
+                    <div class="btn-group">
+                        <button type="button" class="btn" id="btnSayfaKaydet">Köy Sayfasını Kaydet</button>
+                        <button type="button" class="btn btn-sec" id="btnSayfaIptal" style="display:none;">Düzenlemeyi İptal</button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">
+                        <span>Köy Hızlı Erişim • <span id="sayfaSayac">0</span> Köy</span>
+                    </div>
+                    <div class="village-dropdown-row">
+                        <select id="selKoySecAc" aria-label="Köy seç">
+                            <option value="">Köy Seçin</option>
+                        </select>
+                        <button type="button" class="btn" id="btnSeciliKoyuAc">Köyü Aç</button>
+                    </div>
+                    <div class="filter-row" style="margin-top:10px; margin-bottom:0;">
+                        <input type="text" id="inpKoyArama" placeholder="Köy adı veya yazılarda ara...">
+                        <select id="selKoySirala">
+                            <option value="YENI">Sırala: Son Eklenen</option>
+                            <option value="AZ">Sırala: Köy Adı (A - Z)</option>
+                            <option value="ZA">Sırala: Köy Adı (Z - A)</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. SEKME: TANITIM VİTRİNİ -->
+        <section id="tab-tanitim" class="tab-panel">
+            <div class="hero">
+                <span class="hero-tag" id="heroEtiket">BELGE & KİTAP ARŞİVİ</span>
+                <h2 id="heroBaslik">Kütüphane ve Belge Tanıtım Vitrini</h2>
+                <p id="heroAciklama">Kitaplarınızı, tarihi belgelerinizi ve kaynak eserlerinizi kayıt numarası, yazar/kurum ve tarih bilgileriyle düzenli biçimde arşivleyin.</p>
+                <div class="stats-row">
+                    <div class="stat-box">
+                        <span class="stat-num" id="statToplam">0</span>
+                        <span class="stat-lbl">Toplam Kayıt</span>
+                    </div>
+                    <div class="stat-box">
+                        <span class="stat-num" id="statFavori">0</span>
+                        <span class="stat-lbl">Favori Kayıt</span>
+                    </div>
+                    <div class="stat-box">
+                        <span class="stat-num" id="statSayfa">0</span>
+                        <span class="stat-lbl">İl İlçe / Köy</span>
+                    </div>
+                    <div class="stat-box">
+                        <span class="stat-num" id="statSonTarih">-</span>
+                        <span class="stat-lbl">Son Güncelleme</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title"><span>Tür / Kategori Dağılım Özeti</span></div>
+                <div class="category-summary-row" id="kategoriDagilimOzet"></div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">
+                    <span>Vitrine Çıkan Kayıtlar (Favoriler Öncelikli)</span>
+                    <button type="button" class="mini-btn btn-view" id="btnVitrinYonet">Tümünü Yönet →</button>
+                </div>
+                <div class="showcase-grid" id="vitrinListesi"></div>
+            </div>
+
+            <div class="card">
+                <div class="card-title"><span>Hakkında ve Kullanım Notları</span></div>
+                <p style="font-size:0.86rem; color:var(--text-muted); line-height:1.55;">
+                    Bu uygulama harici sunucuya ihtiyaç duymadan tüm verilerinizi cihazınızda saklar. Kota korumalı kayıt altyapısı depolama alanı dolduğunda sizi uyarır; üst çubuktan gece modunu açabilir, yazı boyutunu ayarlayabilir, PIN kilidi koyabilir, başlık slayderi, il ilçe tanıtım sayfaları ve köy sayfaları oluşturabilir ve okuma ekranlarında Türkçe sesli okuma kullanabilirsiniz.
+                </p>
+            </div>
+        </section>
+
+        <!-- 4. SEKME: ARŞİV YÖNETİMİ & EKLEME -->
+        <section id="tab-arsiv" class="tab-panel">
+            <div class="card" id="formKarti">
+                <div class="card-title">
+                    <span id="formBaslik">Yeni Kayıt Ekle</span>
+                    <span class="edit-badge" id="duzenlemeRozet">DÜZENLEME MODU</span>
+                </div>
+                <div class="form-grid">
+                    <div class="col-full">
+                        <label id="lblAnaBaslik" for="inpBaslik">Eser / Belge Adı *</label>
+                        <input type="text" id="inpBaslik" placeholder="Başlık giriniz...">
+                    </div>
+                    <div>
+                        <label id="lblAltBilgi" for="inpAltBilgi">Yazar / Kurum</label>
+                        <input type="text" id="inpAltBilgi" placeholder="Örn: Ahmet Yılmaz">
+                    </div>
+                    <div>
+                        <label id="lblKategori" for="inpKategori">Tür / Kategori</label>
+                        <select id="inpKategori"></select>
+                    </div>
+                    <div>
+                        <label id="lblTarih" for="inpTarih">Tarih</label>
+                        <input type="text" id="inpTarih" maxlength="10">
+                    </div>
+                    <div>
+                        <label id="lblEkBilgi" for="inpEkBilgi">Raf / Dosya No</label>
+                        <input type="text" id="inpEkBilgi" placeholder="Örn: Raf A-12">
+                    </div>
+                    <div class="col-full">
+                        <div class="img-opt-bar">
+                            <div>
+                                <label for="selArsivGorselGenislik">Yüklenen Resim Genişliği</label>
+                                <select id="selArsivGorselGenislik" class="gorsel-genislik-sec">
+                                    <option value="480">480 px (Küçük - Az Hafıza)</option>
+                                    <option value="700">700 px (Standart)</option>
+                                    <option value="1024">1024 px (Yüksek Detay)</option>
+                                    <option value="1440">1440 px (Çok Yüksek)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label for="selArsivGorselKalite">JPEG Sıkıştırma Kalitesi</label>
+                                <select id="selArsivGorselKalite" class="gorsel-kalite-sec">
+                                    <option value="0.6">60% (Düşük Boyut)</option>
+                                    <option value="0.75">75% (Dengeli)</option>
+                                    <option value="0.8">80% (Varsayılan)</option>
+                                    <option value="0.9">90% (Yüksek Kalite)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <label for="inpGorsel">Kayıt Görseli / Kapak Fotoğrafı (İsteğe Bağlı)</label>
+                        <input type="file" id="inpGorsel" accept="image/*">
+                    </div>
+                    <div class="col-full">
+                        <label id="lblMetin" for="inpMetin">Özet / Açıklama</label>
+                        <textarea id="inpMetin" rows="4" placeholder="Metin veya açıklama giriniz..."></textarea>
+                    </div>
+                </div>
+                <div class="btn-group">
+                    <button type="button" class="btn" id="btnKayitEkle">Arşive Kaydet</button>
+                    <button type="button" class="btn btn-sec" id="btnDuzenlemeIptal" style="display:none;">Düzenlemeyi İptal Et</button>
+                    <button type="button" class="btn btn-sec" id="btnJsonIndir">JSON Yedek İndir</button>
+                    <button type="button" class="btn btn-sec" id="btnJsonYukleTetik">JSON Yükle</button>
+                    <input type="file" id="dosyaYukle" accept=".json" style="display:none">
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">
+                    <span>Kayıtlı Arşiv (<span id="listeSayac">0</span>)</span>
+                </div>
+                <div class="filter-row">
+                    <input type="text" id="inpArama" placeholder="No, başlık, yazar veya metinde ara...">
+                    <select id="inpFiltre"></select>
+                    <select id="inpFavoriFiltre">
+                        <option value="TUMU">Tüm Kayıtlar</option>
+                        <option value="FAVORI">★ Sadece Favoriler</option>
+                    </select>
+                </div>
+                <div class="item-list" id="arsivListesi"></div>
+            </div>
+        </section>
+    </main>
+
+    <!-- ALT GEZİNTİ -->
+    <nav>
+        <button type="button" class="nav-btn active" id="navIlIlce">İl / İlçe Tanıtım</button>
+        <button type="button" class="nav-btn" id="navSayfalar">Köy Sayfaları</button>
+        <button type="button" class="nav-btn" id="navTanitim">Tanıtım</button>
+        <button type="button" class="nav-btn" id="navArsiv">Arşiv / Liste</button>
+    </nav>
+</div>
+
+<!-- DETAY / OKUMA / GÖRSEL ÖNİZLEME PENCERESİ -->
+<div class="modal-backdrop" id="detayModal">
+    <div class="modal-box">
+        <div class="modal-header">
+            <strong id="modalBaslik" style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">Detay</strong>
+            <div class="modal-actions">
+                <button type="button" class="mini-btn" style="background:#2563eb; color:#fff;" id="btnSesliOku">Sesli Oku</button>
+                <button type="button" class="mini-btn" style="background:#fff; color:#0f172a;" id="btnModalKapat">Kapat</button>
+            </div>
+        </div>
+        <div class="modal-body" id="modalIcerik"></div>
+    </div>
+</div>
+
+<script>
+    const STORAGE_KEY = 'cok_amacli_arsiv_v2';
+    const PAGES_KEY = 'cok_amacli_sayfalar_v1';
+    const IL_ILCE_KEY = 'cok_amacli_il_ilce_v1';
+    const MODE_KEY = 'cok_amacli_arsiv_mod';
+    const HEADER_KEY = 'cok_amacli_arsiv_ust_baslik';
+    const THEME_KEY = 'cok_amacli_arsiv_koyu_tema';
+    const FONT_KEY = 'cok_amacli_arsiv_yazi_olcek';
+    const PIN_KEY = 'cok_amacli_arsiv_pin';
+    const IMG_OPT_KEY = 'cok_amacli_gorsel_ayar_v1';
+
+    const GECERLI_KOY_RENKLERI = ['mavi', 'yesil', 'bordo', 'amber', 'mor'];
+    const AY_ADLARI = ['Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran', 'Temmuz', 'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık'];
+    const GUN_ADLARI = ['Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt', 'Paz'];
+
+    function guvenliLocalStorageYaz(anahtar, deger) {
+        try {
+            localStorage.setItem(anahtar, deger);
+            return true;
+        } catch (err) {
+            const kotaHatasi = err && (
+                err.name === 'QuotaExceededError' ||
+                err.name === 'NS_ERROR_DOM_QUOTA_REACHED' ||
+                err.code === 22 ||
+                err.code === 1014
+            );
+            if (kotaHatasi) {
+                alert('Depolama alanı dolu (localStorage kotası aşıldı). Son değişiklik tarayıcıya kaydedilemedi; büyük resimleri azaltın veya JSON Yedek İndir ile yedek alın.');
+            } else {
+                alert('Yerel depolama yazma hatası oluştu. Değişiklik kaydedilemedi.');
+            }
+            return false;
+        }
+    }
+
+    function guvenliLocalStorageSil(anahtar) {
+        try {
+            localStorage.removeItem(anahtar);
+            return true;
+        } catch (err) {
+            return false;
+        }
+    }
+
+    const MODLAR = {
+        belge: {
+            etiket: 'BELGE & KİTAP ARŞİVİ',
+            siteBaslik: 'Kitap ve Belge Arşivi',
+            heroBaslik: 'Kütüphane ve Belge Tanıtım Vitrini',
+            heroAciklama: 'Kitaplarınızı, tarihi belgelerinizi ve kaynak eserlerinizi kayıt numarası, yazar/kurum ve tarih bilgileriyle düzenli biçimde arşivleyin.',
+            lblAnaBaslik: 'Eser / Belge Adı *',
+            lblAltBilgi: 'Yazar / Kurum',
+            phAltBilgi: 'Örn: Halil İnalcık / Kurum Adı',
+            lblEkBilgi: 'Raf / Klasör Kodu',
+            phEkBilgi: 'Örn: K-04 / Dosya 12',
+            lblMetin: 'Belge Özeti / İçerik Notu',
+            kategoriler: ['Kitap', 'Tarihi Belge', 'Resmi Evrak', 'Dergi / Makale', 'Harita / Görsel']
+        },
+        koleksiyon: {
+            etiket: 'KOLEKSİYON & ÜRÜN KATALOĞU',
+            siteBaslik: 'Koleksiyon ve Katalog',
+            heroBaslik: 'Özel Koleksiyon ve Ürün Vitrini',
+            heroAciklama: 'Koleksiyon parçalarınızı veya ürün kataloğunuzu fotoğrafları, dönem/seri bilgileri ve durum/fiyat notlarıyla sergileyin.',
+            lblAnaBaslik: 'Parça / Ürün Adı *',
+            lblAltBilgi: 'Marka / Üretici / Dönem',
+            phAltBilgi: 'Örn: 1970 Dönemi / Seri No',
+            lblEkBilgi: 'Durum / Değer / Fiyat',
+            phEkBilgi: 'Örn: Kondisyon 10/10 - 1.500 TL',
+            lblMetin: 'Teknik Özellikler ve Hikayesi',
+            kategoriler: ['Antika / Obje', 'Pul / Para', 'Model / Maket', 'Elektronik Ürün', 'El İşi / Sanat']
+        },
+        siir: {
+            etiket: 'KİŞİSEL ŞİİR & NOT DEFTERİ',
+            siteBaslik: 'Şiir ve Not Arşivi',
+            heroBaslik: 'Kişisel Şiirler ve Düşünce Defteri',
+            heroAciklama: 'Yazdığınız şiirleri, denemeleri ve hatıra notlarınızı tarih sırasıyla güvenle saklayın ve okuma modunda rahatça inceleyin.',
+            lblAnaBaslik: 'Şiir veya Not Başlığı *',
+            lblAltBilgi: 'Şair / Yazar / Mahlas',
+            phAltBilgi: 'Adınız veya mahlasınız',
+            lblEkBilgi: 'Yazıldığı Yer / İlham',
+            phEkBilgi: 'Örn: Ilgaz / Sonbahar Akşamı',
+            lblMetin: 'Şiir Dizeleri veya Not Metni',
+            kategoriler: ['Serbest Şiir', 'Hece Ölçüsü', 'Hatıra / Günlük', 'Deneme / Yazı', 'Özlü Söz']
+        }
+    };
+
+    function htmlKacir(metin) {
+        return String(metin || '')
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;');
+    }
+
+    function koyRengiNormalizeEt(renk, varsayilan = 'mavi') {
+        const temiz = String(renk || '').trim().toLowerCase();
+        if (GECERLI_KOY_RENKLERI.includes(temiz)) return temiz;
+        return GECERLI_KOY_RENKLERI.includes(varsayilan) ? varsayilan : 'mavi';
+    }
+
+    function slaytDizisiNormalizeEt(ham) {
+        if (!Array.isArray(ham)) return [];
+        return ham
+            .map(item => {
+                if (typeof item === 'string') return { src: item, caption: '' };
+                if (item && typeof item === 'object' && item.src) {
+                    return { src: item.src, caption: String(item.caption || '') };
+                }
+                return null;
+            })
+            .filter(Boolean);
+    }
+
+    function sayfaResimleriniNormalizeEt(ham) {
+        if (!Array.isArray(ham)) return [];
+        return ham
+            .map(item => {
+                if (typeof item === 'string') return { src: item, caption: '' };
+                if (item && typeof item === 'object' && item.src) {
+                    return { src: item.src, caption: String(item.caption || '') };
+                }
+                return null;
+            })
+            .filter(Boolean);
+    }
+
+    function sayfaDizisiniNormalizeEt(ham) {
+        if (!Array.isArray(ham)) return [];
+        return ham.map((item, idx) => {
+            const ad = String((item && (item.baslik || item.koyAdi)) || `Köy ${idx + 1}`).trim();
+            const varsayilanRenk = GECERLI_KOY_RENKLERI[idx % GECERLI_KOY_RENKLERI.length];
+            return {
+                id: (item && item.id) || `K-${String(idx + 1).padStart(5, '0')}`,
+                baslik: ad,
+                koyAdi: ad,
+                renkTemasi: koyRengiNormalizeEt(item && item.renkTemasi, varsayilanRenk),
+                altBaslik: String((item && item.altBaslik) || '').trim(),
+                metin: String((item && item.metin) || '').trim(),
+                resimler: sayfaResimleriniNormalizeEt(item && item.resimler),
+                notlar: Array.isArray(item && item.notlar)
+                    ? item.notlar.map((n, nIdx) => ({
+                        id: n.id || `N-${nIdx + 1}`,
+                        tarih: String(n.tarih || bugunStr()).trim(),
+                        metin: String(n.metin || '').trim()
+                    })).filter(n => n.metin)
+                    : []
+            };
+        });
+    }
+
+    function ilIlceDizisiniNormalizeEt(ham) {
+        if (!Array.isArray(ham)) return [];
+        return ham.map((item, idx) => {
+            const il = String((item && item.il) || '').trim();
+            const ilce = String((item && item.ilce) || '').trim();
+            const varsayilanRenk = GECERLI_KOY_RENKLERI[(idx + 3) % GECERLI_KOY_RENKLERI.length];
+            return {
+                id: (item && item.id) || `L-${String(idx + 1).padStart(5, '0')}`,
+                il: il || 'İl Belirtilmemiş',
+                ilce: ilce || 'Merkez',
+                renkTemasi: koyRengiNormalizeEt(item && item.renkTemasi, varsayilanRenk),
+                altBaslik: String((item && item.altBaslik) || '').trim(),
+                metin: String((item && item.metin) || '').trim(),
+                resimler: sayfaResimleriniNormalizeEt(item && item.resimler),
+                notlar: Array.isArray(item && item.notlar)
+                    ? item.notlar.map((n, nIdx) => ({
+                        id: n.id || `LN-${nIdx + 1}`,
+                        tarih: String(n.tarih || bugunStr()).trim(),
+                        metin: String(n.metin || '').trim()
+                    })).filter(n => n.metin)
+                    : []
+            };
+        });
+    }
+
+    function guvenliJsonOku(anahtar, varsayilan) {
+        try {
+            const raw = localStorage.getItem(anahtar);
+            return raw ? JSON.parse(raw) : varsayilan;
+        } catch (err) {
+            return varsayilan;
+        }
+    }
+
+    let aktifMod = localStorage.getItem(MODE_KEY) || 'belge';
+    let kayitlar = guvenliJsonOku(STORAGE_KEY, []);
+    if (!Array.isArray(kayitlar)) kayitlar = [];
+
+    let sayfalar = sayfaDizisiniNormalizeEt(guvenliJsonOku(PAGES_KEY, []));
+    let ilIlceler = ilIlceDizisiniNormalizeEt(guvenliJsonOku(IL_ILCE_KEY, []));
+
+    const hamGorselAyar = guvenliJsonOku(IMG_OPT_KEY, {});
+    let gorselAyar = {
+        maxGenislik: parseInt(hamGorselAyar.maxGenislik, 10) || 700,
+        kalite: parseFloat(hamGorselAyar.kalite) || 0.8
+    };
+
+    const hamBaslik = guvenliJsonOku(HEADER_KEY, {});
+    const baslangicSlaytlar = Array.isArray(hamBaslik.resimler)
+        ? slaytDizisiNormalizeEt(hamBaslik.resimler)
+        : (hamBaslik.resim ? [{ src: hamBaslik.resim, caption: String(hamBaslik.slaytAltyazi || '') }] : []);
+
+    let ustBaslikBilgi = {
+        ana: hamBaslik.ana || 'DİJİTAL ARŞİV VE TANITIM PORTALI',
+        alt: hamBaslik.alt || '',
+        resimler: baslangicSlaytlar,
+        slaytSureMs: parseInt(hamBaslik.slaytSureMs, 10) || 3500
+    };
+
+    let koyuTemaAktif = localStorage.getItem(THEME_KEY) === '1';
+    let yaziOlcegi = parseFloat(localStorage.getItem(FONT_KEY)) || 1;
+    let kayitliPin = localStorage.getItem(PIN_KEY) || '';
+    let kilitModu = 'ACMA';
+
+    let geciciUstResimler = [];
+    let geciciGorselBase64 = '';
+    let geciciSayfaResimleri = [];
+    let geciciIlIlceResimleri = [];
+    let duzenlenenId = null;
+    let duzenlenenSayfaId = null;
+    let duzenlenenIlIlceId = null;
+    let acikSayfaId = null;
+    let acikIlIlceId = null;
+    let aktifKoySlaytIndex = 0;
+    let aktifIlIlceSlaytIndex = 0;
+    let koyOtoSlaytZamanlayici = null;
+    let ilIlceOtoSlaytZamanlayici = null;
+    let aktifOkunanMetin = '';
+    let sesliOkuyor = false;
+    let aktifSlaytIndex = 0;
+    let slaytZamanlayici = null;
+
+    const simdiIlk = new Date();
+    let takvimYil = simdiIlk.getFullYear();
+    let takvimAy = simdiIlk.getMonth();
+    let seciliTakvimTarih = bugunStr();
+
+    function sayfaSlayderZamanlayicilariniTemizle() {
+        if (koyOtoSlaytZamanlayici) {
+            clearInterval(koyOtoSlaytZamanlayici);
+            koyOtoSlaytZamanlayici = null;
+        }
+        if (ilIlceOtoSlaytZamanlayici) {
+            clearInterval(ilIlceOtoSlaytZamanlayici);
+            ilIlceOtoSlaytZamanlayici = null;
+        }
+    }
+
+    function sayfaSlayderOlustur(resimler, aktifIndex, sayfaBasligi, onDegis, onAc) {
+        const liste = sayfaResimleriniNormalizeEt(resimler);
+        const kutu = document.createElement('div');
+        kutu.className = 'page-slider-box';
+
+        if (liste.length === 0) {
+            kutu.innerHTML = '<p style="font-size:0.8rem; color:var(--text-muted); text-align:center;">Bu sayfa için henüz resim eklenmemiş.</p>';
+            return kutu;
+        }
+
+        const guvenliIdx = Math.max(0, Math.min(aktifIndex || 0, liste.length - 1));
+        const aktifResim = liste[guvenliIdx];
+
+        const stage = document.createElement('div');
+        stage.className = 'page-slider-stage';
+
+        const img = document.createElement('img');
+        img.src = aktifResim.src;
+        img.alt = `${sayfaBasligi} - ${guvenliIdx + 1}`;
+        img.addEventListener('click', function() {
+            onAc(aktifResim, guvenliIdx);
+        });
+        stage.appendChild(img);
+
+        const sayac = document.createElement('div');
+        sayac.className = 'page-slider-counter';
+        sayac.textContent = `${guvenliIdx + 1} / ${liste.length}`;
+        stage.appendChild(sayac);
+
+        if (liste.length > 1) {
+            const oncekiBtn = document.createElement('button');
+            oncekiBtn.type = 'button';
+            oncekiBtn.className = 'page-slider-nav-btn prev';
+            oncekiBtn.setAttribute('aria-label', 'Önceki resim');
+            oncekiBtn.textContent = '‹';
+            oncekiBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                onDegis((guvenliIdx - 1 + liste.length) % liste.length, true);
+            });
+            stage.appendChild(oncekiBtn);
+
+            const sonrakiBtn = document.createElement('button');
+            sonrakiBtn.type = 'button';
+            sonrakiBtn.className = 'page-slider-nav-btn next';
+            sonrakiBtn.setAttribute('aria-label', 'Sonraki resim');
+            sonrakiBtn.textContent = '›';
+            sonrakiBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                onDegis((guvenliIdx + 1) % liste.length, true);
+            });
+            stage.appendChild(sonrakiBtn);
+        }
+
+        kutu.appendChild(stage);
+
+        const footer = document.createElement('div');
+        footer.className = 'page-slider-footer';
+
+     const cap = document.createElement('div');
+        cap.className = 'page-slider-caption';
+        const temizAciklama = String(aktifResim.caption || '').trim();
+        cap.textContent = temizAciklama || String(sayfaBasligi || '').trim();
+        footer.appendChild(cap);
+
+        if (liste.length > 1) {
+            const dots = document.createElement('div');
+            dots.className = 'page-slider-dots';
+            liste.forEach((_, idx) => {
+                const dot = document.createElement('button');
+                dot.type = 'button';
+                dot.className = `page-slider-dot${idx === guvenliIdx ? ' active' : ''}`;
+                dot.setAttribute('aria-label', `${idx + 1}. resim`);
+                dot.addEventListener('click', function() {
+                    onDegis(idx, true);
+                });
+                dots.appendChild(dot);
+            });
+            footer.appendChild(dots);
+        }
+
+        kutu.appendChild(footer);
+        return kutu;
+    }
+
+    function koyOtoSlayderBaslat(sayfa) {
+        if (koyOtoSlaytZamanlayici) {
+            clearInterval(koyOtoSlaytZamanlayici);
+            koyOtoSlaytZamanlayici = null;
+        }
+        const liste = sayfaResimleriniNormalizeEt(sayfa && sayfa.resimler);
+        if (!sayfa || acikSayfaId !== sayfa.id || liste.length <= 1) return;
+
+        const sure = parseInt(ustBaslikBilgi.slaytSureMs, 10) || 3500;
+        koyOtoSlaytZamanlayici = setInterval(function() {
+            if (acikSayfaId !== sayfa.id) {
+                clearInterval(koyOtoSlaytZamanlayici);
+                koyOtoSlaytZamanlayici = null;
+                return;
+            }
+            aktifKoySlaytIndex = (aktifKoySlaytIndex + 1) % liste.length;
+            koySlayderiniCiz(sayfa, false);
+        }, sure);
+    }
+
+    function ilIlceOtoSlayderBaslat(item) {
+        if (ilIlceOtoSlaytZamanlayici) {
+            clearInterval(ilIlceOtoSlaytZamanlayici);
+            ilIlceOtoSlaytZamanlayici = null;
+        }
+        const liste = sayfaResimleriniNormalizeEt(item && item.resimler);
+        if (!item || acikIlIlceId !== item.id || liste.length <= 1) return;
+
+        const sure = parseInt(ustBaslikBilgi.slaytSureMs, 10) || 3500;
+        ilIlceOtoSlaytZamanlayici = setInterval(function() {
+            if (acikIlIlceId !== item.id) {
+                clearInterval(ilIlceOtoSlaytZamanlayici);
+                ilIlceOtoSlaytZamanlayici = null;
+                return;
+            }
+            aktifIlIlceSlaytIndex = (aktifIlIlceSlaytIndex + 1) % liste.length;
+            ilIlceSlayderiniCiz(item, false);
+        }, sure);
+    }
+
+    function koyUstOrtaBasligiGuncelle() {
+        const kutu = document.getElementById('koyUstOrtaBaslikKutusu');
+        const etiket = document.getElementById('koyUstOrtaEtiket');
+        const baslik = document.getElementById('koyUstOrtaBaslik');
+        if (!kutu || !etiket || !baslik) return;
+
+        GECERLI_KOY_RENKLERI.forEach(r => kutu.classList.remove(`koy-tema-${r}`));
+
+        if (acikSayfaId) {
+            const seciliKoy = sayfalar.find(p => p.id === acikSayfaId);
+            if (seciliKoy) {
+                kutu.classList.add(`koy-tema-${koyRengiNormalizeEt(seciliKoy.renkTemasi, 'mavi')}`);
+                etiket.textContent = 'SEÇİLİ KÖY';
+                baslik.textContent = seciliKoy.baslik || seciliKoy.koyAdi || 'Köy Sayfası';
+                return;
+            }
+        }
+
+        kutu.classList.add('koy-tema-mavi');
+        etiket.textContent = 'KÖYLER SAYFASI';
+        baslik.textContent = 'Köyler';
+    }
+
+    function saatiGuncelle() {
+        const now = new Date();
+        const ss = String(now.getHours()).padStart(2, '0');
+        const dd = String(now.getMinutes()).padStart(2, '0');
+        const sn = String(now.getSeconds()).padStart(2, '0');
+        const el = document.getElementById('saatRozet');
+        if (el) el.textContent = `${ss}:${dd}:${sn}`;
+    }
+
+    function takvimCiz() {
+        const baslikEl = document.getElementById('takvimAyBaslik');
+        const izgaraEl = document.getElementById('takvimIzgara');
+        if (!baslikEl || !izgaraEl) return;
+
+        baslikEl.textContent = `${AY_ADLARI[takvimAy]} ${takvimYil}`;
+        izgaraEl.innerHTML = '';
+
+        GUN_ADLARI.forEach(g => {
+            const div = document.createElement('div');
+            div.className = 'cal-weekday';
+            div.textContent = g;
+            izgaraEl.appendChild(div);
+        });
+
+        const ilkGun = new Date(takvimYil, takvimAy, 1);
+        const baslangicOfset = (ilkGun.getDay() + 6) % 7;
+        const ayGunSayisi = new Date(takvimYil, takvimAy + 1, 0).getDate();
+        const bugunTam = bugunStr();
+
+        for (let i = 0; i < baslangicOfset; i++) {
+            const bos = document.createElement('div');
+            bos.className = 'cal-day empty';
+            izgaraEl.appendChild(bos);
+        }
+
+        for (let gun = 1; gun <= ayGunSayisi; gun++) {
+            const tarihStr = `${String(gun).padStart(2, '0')}.${String(takvimAy + 1).padStart(2, '0')}.${takvimYil}`;
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'cal-day';
+            if (tarihStr === bugunTam) btn.classList.add('today');
+            if (tarihStr === seciliTakvimTarih) btn.classList.add('selected');
+            btn.textContent = String(gun);
+            btn.addEventListener('click', function() {
+                seciliTakvimTarih = tarihStr;
+                document.getElementById('inpTarih').value = tarihStr;
+                document.getElementById('inpKoyNotTarih').value = tarihStr;
+                document.getElementById('inpIlIlceNotTarih').value = tarihStr;
+                document.getElementById('takvimSecimBilgi').textContent = `Seçilen tarih: ${tarihStr} (Kayıt ve not tarih alanlarına aktarıldı).`;
+                takvimCiz();
+            });
+            izgaraEl.appendChild(btn);
+        }
+    }
+
+    function takvimCekmecesiniDegistir() {
+        const drawer = document.getElementById('takvimCekmecesi');
+        const aciliyor = !drawer.classList.contains('active');
+        drawer.classList.toggle('active', aciliyor);
+        if (aciliyor) {
+            takvimCiz();
+        }
+    }
+
+    function gorselAyarSecicileriniSenkronizeEt() {
+        document.querySelectorAll('.gorsel-genislik-sec').forEach(sel => {
+            sel.value = String(gorselAyar.maxGenislik);
+        });
+        document.querySelectorAll('.gorsel-kalite-sec').forEach(sel => {
+            sel.value = String(gorselAyar.kalite);
+        });
+    }
+
+    function gorselAyarKaydet() {
+        guvenliLocalStorageYaz(IMG_OPT_KEY, JSON.stringify(gorselAyar));
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const bugun = bugunStr();
+        document.getElementById('tarihRozet').textContent = bugun;
+        document.getElementById('inpTarih').value = bugun;
+        document.getElementById('inpKoyNotTarih').value = bugun;
+        document.getElementById('inpIlIlceNotTarih').value = bugun;
+        document.getElementById('modSecici').value = aktifMod;
+        document.getElementById('selSlaytSure').value = String(ustBaslikBilgi.slaytSureMs);
+        gorselAyarSecicileriniSenkronizeEt();
+        saatiGuncelle();
+        setInterval(saatiGuncelle, 1000);
+        takvimCiz();
+
+        document.getElementById('tarihRozet').addEventListener('click', takvimCekmecesiniDegistir);
+        document.getElementById('btnTakvimAc').addEventListener('click', takvimCekmecesiniDegistir);
+        document.getElementById('btnOncekiAy').addEventListener('click', function() {
+            takvimAy -= 1;
+            if (takvimAy < 0) {
+                takvimAy = 11;
+                takvimYil -= 1;
+            }
+            takvimCiz();
+        });
+        document.getElementById('btnSonrakiAy').addEventListener('click', function() {
+            takvimAy += 1;
+            if (takvimAy > 11) {
+                takvimAy = 0;
+                takvimYil += 1;
+            }
+            takvimCiz();
+        });
+        document.getElementById('btnBugunAy').addEventListener('click', function() {
+            const d = new Date();
+            takvimYil = d.getFullYear();
+            takvimAy = d.getMonth();
+            seciliTakvimTarih = bugunStr();
+            document.getElementById('inpTarih').value = seciliTakvimTarih;
+            document.getElementById('inpKoyNotTarih').value = seciliTakvimTarih;
+            document.getElementById('inpIlIlceNotTarih').value = seciliTakvimTarih;
+            document.getElementById('takvimSecimBilgi').textContent = `Bugün seçildi: ${seciliTakvimTarih}.`;
+            takvimCiz();
+        });
+
+        document.querySelectorAll('.gorsel-genislik-sec').forEach(sel => {
+            sel.addEventListener('change', function(e) {
+                gorselAyar.maxGenislik = parseInt(e.target.value, 10) || 700;
+                gorselAyarKaydet();
+                gorselAyarSecicileriniSenkronizeEt();
+            });
+        });
+
+        document.querySelectorAll('.gorsel-kalite-sec').forEach(sel => {
+            sel.addEventListener('change', function(e) {
+                gorselAyar.kalite = parseFloat(e.target.value) || 0.8;
+                gorselAyarKaydet();
+                gorselAyarSecicileriniSenkronizeEt();
+            });
+        });
+
+        temaVeYaziUygula();
+        ustBaslikUygula();
+        slaytZamanlayiciBaslat();
+
+        if (kayitliPin) {
+            kilitEkraniAc('ACMA');
+        }
+
+        document.getElementById('btnTemaDegistir').addEventListener('click', function() {
+            koyuTemaAktif = !koyuTemaAktif;
+            guvenliLocalStorageYaz(THEME_KEY, koyuTemaAktif ? '1' : '0');
+            temaVeYaziUygula();
+        });
+
+        document.getElementById('btnYaziBuyut').addEventListener('click', function() {
+            yaziOlcegi = Math.min(1.3, +(yaziOlcegi + 0.08).toFixed(2));
+            guvenliLocalStorageYaz(FONT_KEY, String(yaziOlcegi));
+            temaVeYaziUygula();
+        });
+
+        document.getElementById('btnYaziKucult').addEventListener('click', function() {
+            yaziOlcegi = Math.max(0.85, +(yaziOlcegi - 0.08).toFixed(2));
+            guvenliLocalStorageYaz(FONT_KEY, String(yaziOlcegi));
+            temaVeYaziUygula();
+        });
+
+        document.getElementById('btnKilitYonet').addEventListener('click', function() {
+            if (!kayitliPin) {
+                kilitEkraniAc('YENI_PIN');
+            } else {
+                const secim = confirm('PIN kilidi aktif. Tamam: Hemen Kilitle | İptal: PIN Kodunu Değiştir/Kaldır');
+                if (secim) {
+                    kilitEkraniAc('ACMA');
+                } else {
+                    const yeni = prompt('Yeni PIN girin (kaldırmak için boş bırakıp Tamam deyin):');
+                    if (yeni !== null) {
+                        kayitliPin = yeni.trim();
+                        if (kayitliPin) {
+                            guvenliLocalStorageYaz(PIN_KEY, kayitliPin);
+                        } else {
+                            guvenliLocalStorageSil(PIN_KEY);
+                        }
+                        alert(kayitliPin ? 'Yeni PIN kaydedildi.' : 'PIN kilidi kaldırıldı.');
+                    }
+                }
+            }
+        });
+
+        document.getElementById('btnKilitAc').addEventListener('click', function() {
+            const girilen = document.getElementById('inpKilitPin').value.trim();
+            if (!girilen) {
+                alert('Lütfen PIN girin.');
+                return;
+            }
+            if (kilitModu === 'YENI_PIN') {
+                if (!guvenliLocalStorageYaz(PIN_KEY, girilen)) return;
+                kayitliPin = girilen;
+                document.getElementById('kilitEkrani').classList.remove('active');
+                alert('PIN koruması etkinleştirildi.');
+                return;
+            }
+            if (girilen === kayitliPin) {
+                document.getElementById('kilitEkrani').classList.remove('active');
+            } else {
+                alert('Hatalı PIN kodu.');
+            }
+        });
+
+        document.getElementById('btnPinSifirla').addEventListener('click', function() {
+            if (confirm('PIN sıfırlandığında tarayıcıdaki yerel veriler ve kayıtlar silinir. Emin misiniz?')) {
+                guvenliLocalStorageSil(PIN_KEY);
+                guvenliLocalStorageSil(STORAGE_KEY);
+                guvenliLocalStorageSil(PAGES_KEY);
+                guvenliLocalStorageSil(IL_ILCE_KEY);
+                guvenliLocalStorageSil(HEADER_KEY);
+                guvenliLocalStorageSil(IMG_OPT_KEY);
+                location.reload();
+            }
+        });
+
+        document.getElementById('btnOncekiSlayt').addEventListener('click', function(e) {
+            e.stopPropagation();
+            if (ustBaslikBilgi.resimler.length > 0) {
+                aktifSlaytIndex = (aktifSlaytIndex - 1 + ustBaslikBilgi.resimler.length) % ustBaslikBilgi.resimler.length;
+                slaytGorseliniGuncelle();
+            }
+        });
+
+        document.getElementById('btnSonrakiSlayt').addEventListener('click', function(e) {
+            e.stopPropagation();
+            if (ustBaslikBilgi.resimler.length > 0) {
+                aktifSlaytIndex = (aktifSlaytIndex + 1) % ustBaslikBilgi.resimler.length;
+                slaytGorseliniGuncelle();
+            }
+        });
+
+        document.getElementById('bannerSliderWrap').addEventListener('click', function() {
+            const aktif = (ustBaslikBilgi.resimler || [])[aktifSlaytIndex];
+            if (aktif && aktif.src) {
+                gorselOnizlemeAc(aktif.caption || 'Başlık Slayder Görseli', aktif.src);
+            }
+        });
+
+        const editorKutusu = document.getElementById('baslikEditorKutusu');
+        const resimSilBtn = document.getElementById('btnUstResimSil');
+
+        document.getElementById('btnBaslikAc').addEventListener('click', function() {
+            const acikMi = editorKutusu.classList.contains('active');
+            if (acikMi) {
+                editorKutusu.classList.remove('active');
+            } else {
+                document.getElementById('inpAnaBaslikDuzenle').value = ustBaslikBilgi.ana;
+                document.getElementById('inpAltBaslikDuzenle').value = ustBaslikBilgi.alt;
+                document.getElementById('selSlaytSure').value = String(ustBaslikBilgi.slaytSureMs || 3500);
+                document.getElementById('inpUstResim').value = '';
+                geciciUstResimler = slaytDizisiNormalizeEt(ustBaslikBilgi.resimler).map(s => ({ ...s }));
+                ustResimOnizlemeCiz();
+                editorKutusu.classList.add('active');
+                document.getElementById('inpAnaBaslikDuzenle').focus();
+            }
+        });
+
+        document.getElementById('inpUstResim').addEventListener('change', function(e) {
+            const files = Array.from(e.target.files || []);
+            files.forEach(file => {
+                resmiBase64Yap(file, 480, 0.65, function(base64) {
+                    geciciUstResimler.push({ src: base64, caption: '' });
+                    ustResimOnizlemeCiz();
+                });
+            });
+            e.target.value = '';
+        });
+
+        resimSilBtn.addEventListener('click', function() {
+            geciciUstResimler = [];
+            document.getElementById('inpUstResim').value = '';
+            ustResimOnizlemeCiz();
+        });
+
+        document.getElementById('btnBaslikIptal').addEventListener('click', function() {
+            editorKutusu.classList.remove('active');
+        });
+
+        document.getElementById('btnBaslikKaydet').addEventListener('click', function() {
+            const yeniAna = document.getElementById('inpAnaBaslikDuzenle').value.trim();
+            const yeniAlt = document.getElementById('inpAltBaslikDuzenle').value.trim();
+            const yeniSure = parseInt(document.getElementById('selSlaytSure').value, 10) || 3500;
+            if (!yeniAna) {
+                alert('Ana başlık boş bırakılamaz.');
+                return;
+            }
+            const oncekiBilgi = { ...ustBaslikBilgi, resimler: [...(ustBaslikBilgi.resimler || [])] };
+            const temizSlaytlar = geciciUstResimler.map(s => ({
+                src: s.src,
+                caption: String(s.caption || '').trim()
+            }));
+            const adayBilgi = {
+                ana: yeniAna,
+                alt: yeniAlt,
+                resimler: temizSlaytlar,
+                slaytSureMs: yeniSure
+            };
+            if (!guvenliLocalStorageYaz(HEADER_KEY, JSON.stringify(adayBilgi))) {
+                ustBaslikBilgi = oncekiBilgi;
+                return;
+            }
+            ustBaslikBilgi = adayBilgi;
+            aktifSlaytIndex = 0;
+            ustBaslikUygula();
+            slaytZamanlayiciBaslat();
+            if (acikSayfaId) {
+                const aktifKoy = sayfalar.find(p => p.id === acikSayfaId);
+                if (aktifKoy) koyOtoSlayderBaslat(aktifKoy);
+            }
+            if (acikIlIlceId) {
+                const aktifIlIlce = ilIlceler.find(p => p.id === acikIlIlceId);
+                if (aktifIlIlce) ilIlceOtoSlayderBaslat(aktifIlIlce);
+            }
+            editorKutusu.classList.remove('active');
+        });
+
+        document.getElementById('navIlIlce').addEventListener('click', function() {
+            sekmeAc('tab-il-ilce', this);
+        });
+        document.getElementById('navSayfalar').addEventListener('click', function() {
+            sekmeAc('tab-sayfalar', this);
+        });
+        document.getElementById('navTanitim').addEventListener('click', function() {
+            sekmeAc('tab-tanitim', this);
+        });
+        document.getElementById('navArsiv').addEventListener('click', function() {
+            sekmeAc('tab-arsiv', this);
+        });
+        document.getElementById('btnVitrinYonet').addEventListener('click', function() {
+            sekmeAc('tab-arsiv', document.getElementById('navArsiv'));
+        });
+
+        document.getElementById('selAcikIlIlceRenk').addEventListener('change', function(e) {
+            if (!acikIlIlceId) return;
+            const item = ilIlceler.find(p => p.id === acikIlIlceId);
+            if (!item) return;
+            const oncekiRenk = item.renkTemasi;
+            const yeniRenk = koyRengiNormalizeEt(e.target.value, 'amber');
+            item.renkTemasi = yeniRenk;
+            if (!ilIlceleriKaydet()) {
+                item.renkTemasi = oncekiRenk;
+                ilIlceOkumaTemasiUygula(oncekiRenk);
+                return;
+            }
+            ilIlceOkumaTemasiUygula(yeniRenk);
+            ekraniYenile();
+        });
+
+        document.getElementById('inpIlIlceResimleri').addEventListener('change', function(e) {
+            const files = Array.from(e.target.files || []);
+            files.forEach(file => {
+                resmiBase64Yap(file, gorselAyar.maxGenislik, gorselAyar.kalite, function(base64) {
+                    geciciIlIlceResimleri.push({ src: base64, caption: '' });
+                    ilIlceResimOnizlemeCiz();
+                });
+            });
+            e.target.value = '';
+        });
+
+        document.getElementById('btnSeciliIlIlceAc').addEventListener('click', function() {
+            const seciliId = document.getElementById('selIlIlceSecAc').value;
+            if (!seciliId) {
+                alert('Lütfen açmak için bir il veya ilçe seçin.');
+                return;
+            }
+            ilIlceAc(seciliId);
+        });
+
+        document.getElementById('selIlIlceSecAc').addEventListener('change', function(e) {
+            if (e.target.value) {
+                ilIlceAc(e.target.value);
+                e.target.value = '';
+            }
+        });
+
+        document.getElementById('inpIlIlceArama').addEventListener('input', ekraniYenile);
+        document.getElementById('selIlIlceSirala').addEventListener('change', ekraniYenile);
+        document.getElementById('btnIlIlceKaydet').addEventListener('click', ilIlceKaydetVeyaGuncelle);
+        document.getElementById('btnIlIlceIptal').addEventListener('click', ilIlceDuzenlemeyiIptal);
+        document.getElementById('btnIlIlceListeyeDon').addEventListener('click', ilIlceListesineDon);
+        document.getElementById('btnIlIlceSesliOku').addEventListener('click', ilIlceSesliOkumaDegistir);
+        document.getElementById('btnIlIlceNotEkle').addEventListener('click', ilIlceNotuEkle);
+        document.getElementById('btnAcikIlIlceDuzenle').addEventListener('click', function() {
+            if (acikIlIlceId) {
+                const hedefId = acikIlIlceId;
+                ilIlceListesineDon();
+                ilIlceDuzenleBaslat(hedefId);
+            }
+        });
+        document.getElementById('btnAcikIlIlceSil').addEventListener('click', function() {
+            if (acikIlIlceId) {
+                ilIlceSil(acikIlIlceId);
+            }
+        });
+
+        document.getElementById('selAcikKoyRenk').addEventListener('change', function(e) {
+            if (!acikSayfaId) return;
+            const s = sayfalar.find(p => p.id === acikSayfaId);
+            if (!s) return;
+            const oncekiRenk = s.renkTemasi;
+            const yeniRenk = koyRengiNormalizeEt(e.target.value, 'mavi');
+            s.renkTemasi = yeniRenk;
+            if (!sayfalariKaydet()) {
+                s.renkTemasi = oncekiRenk;
+                koyOkumaTemasiUygula(oncekiRenk);
+                koyUstOrtaBasligiGuncelle();
+                return;
+            }
+            koyOkumaTemasiUygula(yeniRenk);
+            koyUstOrtaBasligiGuncelle();
+            ekraniYenile();
+        });
+
+        document.getElementById('inpSayfaResimleri').addEventListener('change', function(e) {
+            const files = Array.from(e.target.files || []);
+            files.forEach(file => {
+                resmiBase64Yap(file, gorselAyar.maxGenislik, gorselAyar.kalite, function(base64) {
+                    geciciSayfaResimleri.push({ src: base64, caption: '' });
+                    sayfaResimOnizlemeCiz();
+                });
+            });
+            e.target.value = '';
+        });
+
+        document.getElementById('btnSeciliKoyuAc').addEventListener('click', function() {
+            const seciliId = document.getElementById('selKoySecAc').value;
+            if (!seciliId) {
+                alert('Lütfen açmak için bir köy seçin.');
+                return;
+            }
+            sayfaAc(seciliId);
+        });
+
+        document.getElementById('selKoySecAc').addEventListener('change', function(e) {
+            if (e.target.value) {
+                sayfaAc(e.target.value);
+                e.target.value = '';
+            }
+        });
+
+        document.getElementById('inpKoyArama').addEventListener('input', ekraniYenile);
+        document.getElementById('selKoySirala').addEventListener('change', ekraniYenile);
+        document.getElementById('btnSayfaKaydet').addEventListener('click', sayfaKaydetVeyaGuncelle);
+        document.getElementById('btnSayfaIptal').addEventListener('click', sayfaDuzenlemeyiIptal);
+        document.getElementById('btnSayfaListeyeDon').addEventListener('click', sayfaListesineDon);
+        document.getElementById('btnSayfaSesliOku').addEventListener('click', sayfaSesliOkumaDegistir);
+        document.getElementById('btnKoyNotEkle').addEventListener('click', koyNotuEkle);
+        document.getElementById('btnAcikSayfaDuzenle').addEventListener('click', function() {
+            if (acikSayfaId) {
+                const hedefId = acikSayfaId;
+                sayfaListesineDon();
+                sayfaDuzenleBaslat(hedefId);
+            }
+        });
+        document.getElementById('btnAcikSayfaSil').addEventListener('click', function() {
+            if (acikSayfaId) {
+                sayfaSil(acikSayfaId);
+            }
+        });
+
+        document.getElementById('modSecici').addEventListener('change', function(e) {
+            modDegistir(e.target.value, true);
+        });
+        document.getElementById('btnKayitEkle').addEventListener('click', kayitKaydetVeyaGuncelle);
+        document.getElementById('btnDuzenlemeIptal').addEventListener('click', duzenlemeyiIptalEt);
+        document.getElementById('btnJsonIndir').addEventListener('click', jsonYedekIndir);
+        document.getElementById('btnJsonYukleTetik').addEventListener('click', function() {
+            document.getElementById('dosyaYukle').click();
+        });
+        document.getElementById('dosyaYukle').addEventListener('change', jsonYedekYukle);
+        document.getElementById('inpGorsel').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) { geciciGorselBase64 = ''; return; }
+            resmiBase64Yap(file, gorselAyar.maxGenislik, gorselAyar.kalite, function(base64) {
+                geciciGorselBase64 = base64;
+            });
+        });
+        document.getElementById('inpArama').addEventListener('input', ekraniYenile);
+        document.getElementById('inpFiltre').addEventListener('change', ekraniYenile);
+        document.getElementById('inpFavoriFiltre').addEventListener('change', ekraniYenile);
+
+        document.getElementById('btnSesliOku').addEventListener('click', sesliOkumaDegistir);
+        document.getElementById('btnModalKapat').addEventListener('click', modalKapat);
+        document.getElementById('detayModal').addEventListener('click', function(e) {
+            if (e.target === this) modalKapat();
+        });
+
+        if (!localStorage.getItem(STORAGE_KEY) && kayitlar.length === 0) {
+            kayitlar = [
+                {
+                    id: '00001',
+                    mod: 'belge',
+                    baslik: 'Türk Tarihi ve Kültür Atlası',
+                    altBilgi: 'Araştırma Yayınları',
+                    kategori: 'Kitap',
+                    tarih: bugun,
+                    ekBilgi: 'Raf A-01',
+                    metin: 'İlk Çağdan günümüze Türk devletleri ve kültür tarihini kapsayan temel başvuru kaynağı.',
+                    gorsel: '',
+                    favori: true
+                },
+                {
+                    id: '00002',
+                    mod: 'siir',
+                    baslik: 'Dağların Ardında',
+                    altBilgi: 'Kişisel Defter',
+                    kategori: 'Hece Ölçüsü',
+                    tarih: bugun,
+                    ekBilgi: 'Ilgaz',
+                    metin: 'Sabahın serinliğinde uyanır sisli doruklar,\nEski zaman türküsünü fısıldar ulu çamlar.',
+                    gorsel: '',
+                    favori: false
+                }
+            ];
+            veriyiKaydet();
+        }
+
+        if (!localStorage.getItem(PAGES_KEY) && sayfalar.length === 0) {
+            sayfalar = [
+                {
+                    id: 'K-00001',
+                    baslik: 'Merkez Köy',
+                    koyAdi: 'Merkez Köy',
+                    renkTemasi: 'mavi',
+                    altBaslik: `Kayıt: ${bugun}`,
+                    metin: 'Köy seçerek bu köyün sayfasını açabilir, yeni yazılar ekleyebilir ve köy fotoğraflarını 600x500px otomatik slayder halinde inceleyebilirsiniz.',
+                    resimler: [],
+                    notlar: []
+                },
+                {
+                    id: 'K-00002',
+                    baslik: 'Yayla Köyü',
+                    koyAdi: 'Yayla Köyü',
+                    renkTemasi: 'yesil',
+                    altBaslik: 'Yüksek Yayla Hattı',
+                    metin: 'Yaz aylarında serin havası, çeşmeleri ve geleneksel sohbetleriyle bilinen köy sayfamız.',
+                    resimler: [],
+                    notlar: []
+                }
+            ];
+            sayfalariKaydet();
+        }
+
+        if (!localStorage.getItem(IL_ILCE_KEY) && ilIlceler.length === 0) {
+            ilIlceler = [
+                {
+                    id: 'L-00001',
+                    il: 'Çankırı',
+                    ilce: 'Ilgaz',
+                    renkTemasi: 'amber',
+                    altBaslik: 'Batı Karadeniz Geçişi • Yayla ve Orman',
+                    metin: 'Ilgaz Dağı eteklerinde yer alan ilçe, doğal güzellikleri, yaylaları ve yöresel kültürüyle öne çıkar.',
+                    resimler: [],
+                    notlar: []
+                },
+                {
+                    id: 'L-00002',
+                    il: 'Kocaeli',
+                    ilce: 'Darıca',
+                    renkTemasi: 'mavi',
+                    altBaslik: 'Marmara Kıyısı • Tarihi ve Sahil Hattı',
+                    metin: 'Marmara Denizi kıyısında konumlanan Darıca, sahil yürüyüş alanları, tarihi dokusu ve ulaşım kolaylığıyla bilinir.',
+                    resimler: [],
+                    notlar: []
+                }
+            ];
+            ilIlceleriKaydet();
+        }
+
+        modDegistir(aktifMod, false);
+    });
+
+    function temaVeYaziUygula() {
+        document.body.classList.toggle('dark-theme', koyuTemaAktif);
+        document.documentElement.style.setProperty('--font-scale', String(yaziOlcegi));
+        document.getElementById('btnTemaDegistir').textContent = koyuTemaAktif ? 'Açık' : 'Koyu';
+    }
+
+    function koyOkumaTemasiUygula(renk) {
+        const temiz = koyRengiNormalizeEt(renk, 'mavi');
+        const kutu = document.getElementById('sayfaOkumaKutusu');
+        GECERLI_KOY_RENKLERI.forEach(r => kutu.classList.remove(`koy-tema-${r}`));
+        kutu.classList.add(`koy-tema-${temiz}`);
+        document.getElementById('selAcikKoyRenk').value = temiz;
+    }
+
+    function ilIlceOkumaTemasiUygula(renk) {
+        const temiz = koyRengiNormalizeEt(renk, 'amber');
+        const kutu = document.getElementById('ilIlceOkumaKutusu');
+        GECERLI_KOY_RENKLERI.forEach(r => kutu.classList.remove(`koy-tema-${r}`));
+        kutu.classList.add(`koy-tema-${temiz}`);
+        document.getElementById('selAcikIlIlceRenk').value = temiz;
+    }
+
+    function kilitEkraniAc(mod) {
+        kilitModu = mod;
+        const inp = document.getElementById('inpKilitPin');
+        inp.value = '';
+        if (mod === 'YENI_PIN') {
+            document.getElementById('kilitBaslik').textContent = 'PIN Kodu Belirle';
+            document.getElementById('kilitAciklama').textContent = 'Uygulamayı kilitlemek için yeni bir PIN/şifre oluşturun.';
+            document.getElementById('btnKilitAc').textContent = 'PIN Kaydet ve Kilitle';
+        } else {
+            document.getElementById('kilitBaslik').textContent = 'Uygulama Kilitli';
+            document.getElementById('kilitAciklama').textContent = 'Devam etmek için PIN kodunuzu girin.';
+            document.getElementById('btnKilitAc').textContent = 'Kilidi Aç';
+        }
+        document.getElementById('kilitEkrani').classList.add('active');
+        inp.focus();
+    }
+
+    function ustBaslikUygula() {
+        document.getElementById('anaBaslikMetin').textContent = ustBaslikBilgi.ana;
+        document.getElementById('altBaslikMetin').textContent = ustBaslikBilgi.alt;
+        document.title = ustBaslikBilgi.ana;
+
+        const wrap = document.getElementById('bannerSliderWrap');
+        const controls = document.getElementById('bannerSlideControls');
+        const resimler = ustBaslikBilgi.resimler || [];
+
+        if (resimler.length > 0) {
+            if (aktifSlaytIndex >= resimler.length) aktifSlaytIndex = 0;
+            wrap.classList.add('visible');
+            controls.classList.toggle('active', resimler.length > 1);
+            slaytGorseliniGuncelle();
+        } else {
+            wrap.classList.remove('visible');
+            controls.classList.remove('active');
+            document.getElementById('bannerLogoImg').removeAttribute('src');
+            slaytAltyaziGuncelle('');
+        }
+    }
+
+    function slaytAltyaziGuncelle(metin) {
+        const rozet = document.getElementById('slaytAltyaziRozet');
+        const temiz = String(metin || '').trim();
+        if (temiz) {
+            rozet.textContent = temiz;
+            rozet.classList.add('visible');
+        } else {
+            rozet.textContent = '';
+            rozet.classList.remove('visible');
+        }
+    }
+
+    function slaytGorseliniGuncelle() {
+        const resimler = ustBaslikBilgi.resimler || [];
+        if (resimler.length === 0) {
+            slaytAltyaziGuncelle('');
+            return;
+        }
+        const aktif = resimler[aktifSlaytIndex];
+        document.getElementById('bannerLogoImg').src = aktif.src;
+        slaytAltyaziGuncelle(aktif.caption);
+    }
+
+    function slaytZamanlayiciBaslat() {
+        if (slaytZamanlayici) clearInterval(slaytZamanlayici);
+        const sure = parseInt(ustBaslikBilgi.slaytSureMs, 10) || 3500;
+        slaytZamanlayici = setInterval(function() {
+            const resimler = ustBaslikBilgi.resimler || [];
+            if (resimler.length > 1) {
+                aktifSlaytIndex = (aktifSlaytIndex + 1) % resimler.length;
+                slaytGorseliniGuncelle();
+            }
+        }, sure);
+    }
+
+    function ustResimOnizlemeCiz() {
+        const liste = document.getElementById('ustResimOnizlemeListesi');
+        const silBtn = document.getElementById('btnUstResimSil');
+        liste.innerHTML = '';
+
+        geciciUstResimler.forEach((item, i) => {
+            const card = document.createElement('div');
+            card.className = 'header-slide-item-card';
+            const guvenliAltyazi = htmlKacir(item.caption || '');
+            card.innerHTML = `
+                <div class="header-slide-thumb-box">
+                    <img src="${item.src}" alt="Slayt ${i + 1}">
+                    <button type="button" class="remove-thumb-btn" onclick="geciciUstResimSil(${i})">×</button>
+                </div>
+                <input type="text" class="header-slide-caption-inp" placeholder="Görsel altyazısı..." value="${guvenliAltyazi}" oninput="geciciUstAltyaziGuncelle(${i}, this.value)">
+            `;
+            liste.appendChild(card);
+        });
+
+        silBtn.style.display = geciciUstResimler.length > 0 ? 'inline-block' : 'none';
+    }
+
+    function geciciUstAltyaziGuncelle(index, deger) {
+        if (geciciUstResimler[index]) {
+            geciciUstResimler[index].caption = deger;
+        }
+    }
+
+    function geciciUstResimSil(index) {
+        geciciUstResimler.splice(index, 1);
+        ustResimOnizlemeCiz();
+    }
+
+    function gorselOnizlemeAc(baslik, src) {
+        sesliOkumayiDurdur();
+        aktifOkunanMetin = baslik || '';
+        document.getElementById('modalBaslik').textContent = baslik || 'Görsel Önizleme';
+        document.getElementById('modalIcerik').innerHTML = `<img src="${src}" alt="${htmlKacir(baslik || 'Görsel')}">`;
+        document.getElementById('detayModal').classList.add('open');
+    }
+
+    function resmiBase64Yap(file, maxGenislik, kalite, callback) {
+        const hedefGenislik = parseInt(maxGenislik, 10) || 700;
+        const hedefKalite = Math.min(0.95, Math.max(0.3, parseFloat(kalite) || 0.8));
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const img = new Image();
+            img.onload = function() {
+                const canvas = document.createElement('canvas');
+                const oran = Math.min(1, hedefGenislik / img.width);
+                canvas.width = Math.max(1, Math.round(img.width * oran));
+                canvas.height = Math.max(1, Math.round(img.height * oran));
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                callback(canvas.toDataURL('image/jpeg', hedefKalite));
+            };
+            img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    }
+
+    function bugunStr() {
+        const d = new Date();
+        return `${String(d.getDate()).padStart(2, '0')}.${String(d.getMonth() + 1).padStart(2, '0')}.${d.getFullYear()}`;
+    }
+
+    function tarihAlaninaOtoNoktaEkle(id) {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.addEventListener('input', function(e) {
+            let v = e.target.value.replace(/\D/g, '');
+            if (v.length >= 5) v = v.slice(0, 2) + '.' + v.slice(2, 4) + '.' + v.slice(4, 8);
+            else if (v.length >= 3) v = v.slice(0, 2) + '.' + v.slice(2);
+            e.target.value = v;
+        });
+    }
+
+    tarihAlaninaOtoNoktaEkle('inpTarih');
+    tarihAlaninaOtoNoktaEkle('inpKoyNotTarih');
+    tarihAlaninaOtoNoktaEkle('inpIlIlceNotTarih');
+
+    function modDegistir(yeniMod, kaydet = true) {
+        aktifMod = yeniMod;
+        if (kaydet) guvenliLocalStorageYaz(MODE_KEY, aktifMod);
+
+        const cfg = MODLAR[aktifMod];
+        document.getElementById('siteBaslik').textContent = cfg.siteBaslik;
+        document.getElementById('heroEtiket').textContent = cfg.etiket;
+        document.getElementById('heroBaslik').textContent = cfg.heroBaslik;
+        document.getElementById('heroAciklama').textContent = cfg.heroAciklama;
+        document.getElementById('lblAnaBaslik').textContent = cfg.lblAnaBaslik;
+        document.getElementById('lblAltBilgi').textContent = cfg.lblAltBilgi;
+        document.getElementById('inpAltBilgi').placeholder = cfg.phAltBilgi;
+        document.getElementById('lblEkBilgi').textContent = cfg.lblEkBilgi;
+        document.getElementById('inpEkBilgi').placeholder = cfg.phEkBilgi;
+        document.getElementById('lblMetin').textContent = cfg.lblMetin;
+
+        const katSel = document.getElementById('inpKategori');
+        const filSel = document.getElementById('inpFiltre');
+        const oncekiSecim = katSel.value;
+        katSel.innerHTML = '';
+        filSel.innerHTML = '<option value="HEPSI">Tüm Türler</option>';
+
+        cfg.kategoriler.forEach(k => {
+            katSel.innerHTML += `<option value="${k}">${k}</option>`;
+            filSel.innerHTML += `<option value="${k}">${k}</option>`;
+        });
+        if (oncekiSecim && cfg.kategoriler.includes(oncekiSecim)) {
+            katSel.value = oncekiSecim;
+        }
+
+        ekraniYenile();
+    }
+
+    function sekmeAc(tabId, btn) {
+        sesliOkumayiDurdur();
+        sayfaSlayderZamanlayicilariniTemizle();
+        acikSayfaId = null;
+        acikIlIlceId = null;
+        document.getElementById('sayfaOkumaKutusu').style.display = 'none';
+        document.getElementById('sayfaYonetimAlani').style.display = 'block';
+        document.getElementById('ilIlceOkumaKutusu').style.display = 'none';
+        document.getElementById('ilIlceYonetimAlani').style.display = 'block';
+
+        document.body.setAttribute('data-aktif-sekme', tabId);
+        document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById(tabId).classList.add('active');
+        btn.classList.add('active');
+        const mainEl = document.querySelector('main');
+        if (mainEl) mainEl.scrollTop = 0;
+        if (tabId === 'tab-sayfalar') {
+            koyUstOrtaBasligiGuncelle();
+        }
+    }
+
+    function sayfaResimOnizlemeCiz() {
+        const box = document.getElementById('sayfaResimOnizlemeleri');
+        box.innerHTML = '';
+        geciciSayfaResimleri.forEach((item, i) => {
+            const card = document.createElement('div');
+            card.className = 'multi-thumb-card';
+            const guvenliAciklama = htmlKacir(item.caption || '');
+            card.innerHTML = `
+                <div class="multi-thumb-box">
+                    <img src="${item.src}" alt="Resim ${i + 1}">
+                    <button type="button" class="remove-thumb-btn" onclick="geciciSayfaResimSil(${i})">×</button>
+                </div>
+                <input type="text" class="header-slide-caption-inp" placeholder="Resim açıklaması..." value="${guvenliAciklama}" oninput="geciciSayfaResimAciklamaGuncelle(${i}, this.value)">
+            `;
+            box.appendChild(card);
+        });
+    }
+
+    function geciciSayfaResimAciklamaGuncelle(index, deger) {
+        if (geciciSayfaResimleri[index]) {
+            geciciSayfaResimleri[index].caption = deger;
+        }
+    }
+
+    function geciciSayfaResimSil(index) {
+        geciciSayfaResimleri.splice(index, 1);
+        sayfaResimOnizlemeCiz();
+    }
+
+    function sayfaDuzenleBaslat(id) {
+        const s = sayfalar.find(p => p.id === id);
+        if (!s) return;
+        duzenlenenSayfaId = s.id;
+        geciciSayfaResimleri = sayfaResimleriniNormalizeEt(s.resimler).map(r => ({ ...r }));
+
+        document.getElementById('inpSayfaBaslik').value = s.baslik || s.koyAdi || '';
+        document.getElementById('inpSayfaAltBaslik').value = s.altBaslik || '';
+        document.getElementById('selSayfaRenk').value = koyRengiNormalizeEt(s.renkTemasi, 'mavi');
+        document.getElementById('inpSayfaMetin').value = s.metin || '';
+        sayfaResimOnizlemeCiz();
+
+        document.getElementById('sayfaFormKarti').classList.add('editing-mode');
+        document.getElementById('sayfaFormBaslik').textContent = `Köy Sayfasını Düzenle (${s.id})`;
+        document.getElementById('sayfaDuzenlemeRozet').classList.add('visible');
+        document.getElementById('btnSayfaKaydet').textContent = 'Köy Değişikliklerini Kaydet';
+        document.getElementById('btnSayfaIptal').style.display = 'inline-block';
+        sekmeAc('tab-sayfalar', document.getElementById('navSayfalar'));
+        document.getElementById('inpSayfaBaslik').focus();
+    }
+
+    function sayfaDuzenlemeyiIptal() {
+        duzenlenenSayfaId = null;
+        geciciSayfaResimleri = [];
+        document.getElementById('inpSayfaBaslik').value = '';
+        document.getElementById('inpSayfaAltBaslik').value = '';
+        document.getElementById('selSayfaRenk').value = 'mavi';
+        document.getElementById('inpSayfaMetin').value = '';
+        document.getElementById('inpSayfaResimleri').value = '';
+        sayfaResimOnizlemeCiz();
+
+        document.getElementById('sayfaFormKarti').classList.remove('editing-mode');
+        document.getElementById('sayfaFormBaslik').textContent = 'Yeni Köy Sayfası Ekle (Resim & Yazı)';
+        document.getElementById('sayfaDuzenlemeRozet').classList.remove('visible');
+        document.getElementById('btnSayfaKaydet').textContent = 'Köy Sayfasını Kaydet';
+        document.getElementById('btnSayfaIptal').style.display = 'none';
+    }
+
+    function sonrakiKoyIdUret() {
+        if (sayfalar.length === 0) return 'K-00001';
+        const max = sayfalar.reduce((m, item) => {
+            const num = parseInt(String(item.id || '').replace(/\D/g, ''), 10) || 0;
+            return Math.max(m, num);
+        }, 0);
+        return `K-${String(max + 1).padStart(5, '0')}`;
+    }
+
+    function sayfaKaydetVeyaGuncelle() {
+        const koyAdi = document.getElementById('inpSayfaBaslik').value.trim();
+        const metin = document.getElementById('inpSayfaMetin').value.trim();
+        if (!koyAdi) {
+            alert('Lütfen köy adını girin.');
+            document.getElementById('inpSayfaBaslik').focus();
+            return;
+        }
+        if (!metin) {
+            alert('Lütfen köy yazısını girin.');
+            document.getElementById('inpSayfaMetin').focus();
+            return;
+        }
+
+        const oncekiSayfalar = [...sayfalar];
+        const adaySayfalar = [...sayfalar];
+        const altBaslik = document.getElementById('inpSayfaAltBaslik').value.trim() || bugunStr();
+        const renkTemasi = koyRengiNormalizeEt(document.getElementById('selSayfaRenk').value, 'mavi');
+        const temizResimler = geciciSayfaResimleri.map(r => ({
+            src: r.src,
+            caption: String(r.caption || '').trim()
+        }));
+
+        if (duzenlenenSayfaId) {
+            const idx = adaySayfalar.findIndex(p => p.id === duzenlenenSayfaId);
+            if (idx !== -1) {
+                adaySayfalar[idx] = {
+                    ...adaySayfalar[idx],
+                    baslik: koyAdi,
+                    koyAdi: koyAdi,
+                    renkTemasi: renkTemasi,
+                    altBaslik: altBaslik,
+                    metin: metin,
+                    resimler: temizResimler,
+                    notlar: Array.isArray(adaySayfalar[idx].notlar) ? adaySayfalar[idx].notlar : []
+                };
+            }
+        } else {
+            adaySayfalar.unshift({
+                id: sonrakiKoyIdUret(),
+                baslik: koyAdi,
+                koyAdi: koyAdi,
+                renkTemasi: renkTemasi,
+                altBaslik: altBaslik,
+                metin: metin,
+                resimler: temizResimler,
+                notlar: []
+            });
+        }
+
+        sayfalar = adaySayfalar;
+        if (!sayfalariKaydet()) {
+            sayfalar = oncekiSayfalar;
+            return;
+        }
+
+        sayfaDuzenlemeyiIptal();
+        ekraniYenile();
+    }
+
+    function koySlayderiniCiz(sayfa, zamanlayiciyiSifirla = true) {
+        const galeri = document.getElementById('okunanSayfaResimler');
+        galeri.innerHTML = '';
+        const koyAdi = sayfa.baslik || sayfa.koyAdi || 'Köy';
+        const slaytKutusu = sayfaSlayderOlustur(
+            sayfa.resimler,
+            aktifKoySlaytIndex,
+            koyAdi,
+            function(yeniIdx, manuel) {
+                aktifKoySlaytIndex = yeniIdx;
+                koySlayderiniCiz(sayfa, manuel);
+            },
+            function(resimObj, idx) {
+                gorselOnizlemeAc(resimObj.caption ? `${koyAdi}: ${resimObj.caption}` : `${koyAdi} (${idx + 1})`, resimObj.src);
+            }
+        );
+        galeri.appendChild(slaytKutusu);
+        if (zamanlayiciyiSifirla) {
+            koyOtoSlayderBaslat(sayfa);
+        }
+    }
+
+    function sayfaAc(id) {
+        const s = sayfalar.find(p => p.id === id);
+        if (!s) return;
+        sesliOkumayiDurdur();
+        if (ilIlceOtoSlaytZamanlayici) {
+            clearInterval(ilIlceOtoSlaytZamanlayici);
+            ilIlceOtoSlaytZamanlayici = null;
+        }
+        acikSayfaId = s.id;
+        aktifKoySlaytIndex = 0;
+        koyUstOrtaBasligiGuncelle();
+        koyOkumaTemasiUygula(s.renkTemasi || 'mavi');
+        const koyAdi = s.baslik || s.koyAdi || '';
+        document.getElementById('okunanSayfaBaslik').textContent = koyAdi;
+        document.getElementById('okunanSayfaMeta').textContent = `${s.id} • ${s.altBaslik || ''}`;
+        document.getElementById('okunanSayfaMetin').textContent = s.metin;
+        document.getElementById('inpKoyNotTarih').value = bugunStr();
+
+        koySlayderiniCiz(s, true);
+        koyNotlariniCiz(s);
+
+        document.getElementById('sayfaYonetimAlani').style.display = 'none';
+        document.getElementById('sayfaOkumaKutusu').style.display = 'block';
+        const mainEl = document.querySelector('main');
+        if (mainEl) mainEl.scrollTop = 0;
+    }
+
+    function koyNotlariniCiz(sayfa) {
+        const notlar = Array.isArray(sayfa.notlar) ? sayfa.notlar : [];
+        document.getElementById('koyNotSayac').textContent = notlar.length;
+        const listeEl = document.getElementById('koyNotlarListesi');
+        listeEl.innerHTML = '';
+
+        if (notlar.length === 0) {
+            listeEl.innerHTML = '<p style="font-size:0.82rem; color:var(--text-muted);">Bu köy için henüz tarihli not eklenmemiş.</p>';
+            return;
+        }
+
+        notlar.forEach(n => {
+            const div = document.createElement('div');
+            div.className = 'village-note-item';
+            div.innerHTML = `
+                <div style="min-width:0;">
+                    <div class="village-note-date">${htmlKacir(n.tarih || bugunStr())}</div>
+                    <div class="village-note-text">${htmlKacir(n.metin)}</div>
+                </div>
+                <button type="button" class="mini-btn btn-del" onclick="koyNotuSil('${htmlKacir(sayfa.id)}', '${htmlKacir(n.id)}')">Sil</button>
+            `;
+            listeEl.appendChild(div);
+        });
+    }
+
+    function koyNotuEkle() {
+        if (!acikSayfaId) return;
+        const s = sayfalar.find(p => p.id === acikSayfaId);
+        if (!s) return;
+
+        const notMetin = document.getElementById('inpKoyNotMetin').value.trim();
+        const notTarih = document.getElementById('inpKoyNotTarih').value.trim() || bugunStr();
+        if (!notMetin) {
+            alert('Lütfen kısa not veya hatıra metni girin.');
+            return;
+        }
+
+        const oncekiNotlar = Array.isArray(s.notlar) ? [...s.notlar] : [];
+        s.notlar = [
+            {
+                id: `N-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+                tarih: notTarih,
+                metin: notMetin
+            },
+            ...oncekiNotlar
+        ];
+
+        if (!sayfalariKaydet()) {
+            s.notlar = oncekiNotlar;
+            return;
+        }
+
+        document.getElementById('inpKoyNotMetin').value = '';
+        koyNotlariniCiz(s);
+    }
+
+    function koyNotuSil(sayfaId, notId) {
+        const s = sayfalar.find(p => p.id === sayfaId);
+        if (!s || !Array.isArray(s.notlar)) return;
+        const oncekiNotlar = [...s.notlar];
+        s.notlar = s.notlar.filter(n => n.id !== notId);
+        if (!sayfalariKaydet()) {
+            s.notlar = oncekiNotlar;
+            return;
+        }
+        koyNotlariniCiz(s);
+    }
+
+    function sayfaListesineDon() {
+        sesliOkumayiDurdur();
+        if (koyOtoSlaytZamanlayici) {
+            clearInterval(koyOtoSlaytZamanlayici);
+            koyOtoSlaytZamanlayici = null;
+        }
+        acikSayfaId = null;
+        aktifKoySlaytIndex = 0;
+        koyUstOrtaBasligiGuncelle();
+        document.getElementById('sayfaOkumaKutusu').style.display = 'none';
+        document.getElementById('sayfaYonetimAlani').style.display = 'block';
+    }
+
+    function sayfaSil(id) {
+        if (!confirm(`${id} kodlu köy sayfası silinsin mi?`)) return;
+        const oncekiSayfalar = [...sayfalar];
+        sayfalar = sayfalar.filter(p => p.id !== id);
+        if (!sayfalariKaydet()) {
+            sayfalar = oncekiSayfalar;
+            return;
+        }
+        if (duzenlenenSayfaId === id) sayfaDuzenlemeyiIptal();
+        if (acikSayfaId === id) sayfaListesineDon();
+        ekraniYenile();
+    }
+
+    function sayfalariKaydet() {
+        return guvenliLocalStorageYaz(PAGES_KEY, JSON.stringify(sayfalar));
+    }
+
+    function ilIlceBaslikOlustur(item) {
+        const il = String((item && item.il) || '').trim();
+        const ilce = String((item && item.ilce) || '').trim();
+        if (il && ilce) return `${il} / ${ilce}`;
+        return il || ilce || 'Tanıtım Sayfası';
+    }
+
+    function ilIlceResimOnizlemeCiz() {
+        const box = document.getElementById('ilIlceResimOnizlemeleri');
+        box.innerHTML = '';
+        geciciIlIlceResimleri.forEach((item, i) => {
+            const card = document.createElement('div');
+            card.className = 'multi-thumb-card';
+            const guvenliAciklama = htmlKacir(item.caption || '');
+            card.innerHTML = `
+                <div class="multi-thumb-box">
+                    <img src="${item.src}" alt="Resim ${i + 1}">
+                    <button type="button" class="remove-thumb-btn" onclick="geciciIlIlceResimSil(${i})">×</button>
+                </div>
+                <input type="text" class="header-slide-caption-inp" placeholder="Resim açıklaması..." value="${guvenliAciklama}" oninput="geciciIlIlceResimAciklamaGuncelle(${i}, this.value)">
+            `;
+            box.appendChild(card);
+        });
+    }
+
+    function geciciIlIlceResimAciklamaGuncelle(index, deger) {
+        if (geciciIlIlceResimleri[index]) {
+            geciciIlIlceResimleri[index].caption = deger;
+        }
+    }
+
+    function geciciIlIlceResimSil(index) {
+        geciciIlIlceResimleri.splice(index, 1);
+        ilIlceResimOnizlemeCiz();
+    }
+
+    function ilIlceDuzenleBaslat(id) {
+        const item = ilIlceler.find(p => p.id === id);
+        if (!item) return;
+        duzenlenenIlIlceId = item.id;
+        geciciIlIlceResimleri = sayfaResimleriniNormalizeEt(item.resimler).map(r => ({ ...r }));
+
+        document.getElementById('inpIlAdi').value = item.il || '';
+        document.getElementById('inpIlceAdi').value = item.ilce || '';
+        document.getElementById('inpIlIlceAltBaslik').value = item.altBaslik || '';
+        document.getElementById('selIlIlceRenk').value = koyRengiNormalizeEt(item.renkTemasi, 'amber');
+        document.getElementById('inpIlIlceMetin').value = item.metin || '';
+        ilIlceResimOnizlemeCiz();
+
+        document.getElementById('ilIlceFormKarti').classList.add('editing-mode');
+        document.getElementById('ilIlceFormBaslik').textContent = `İl / İlçe Sayfasını Düzenle (${item.id})`;
+        document.getElementById('ilIlceDuzenlemeRozet').classList.add('visible');
+        document.getElementById('btnIlIlceKaydet').textContent = 'İl / İlçe Değişikliklerini Kaydet';
+        document.getElementById('btnIlIlceIptal').style.display = 'inline-block';
+        sekmeAc('tab-il-ilce', document.getElementById('navIlIlce'));
+        document.getElementById('inpIlAdi').focus();
+    }
+
+    function ilIlceDuzenlemeyiIptal() {
+        duzenlenenIlIlceId = null;
+        geciciIlIlceResimleri = [];
+        document.getElementById('inpIlAdi').value = '';
+        document.getElementById('inpIlceAdi').value = '';
+        document.getElementById('inpIlIlceAltBaslik').value = '';
+        document.getElementById('selIlIlceRenk').value = 'amber';
+        document.getElementById('inpIlIlceMetin').value = '';
+        document.getElementById('inpIlIlceResimleri').value = '';
+        ilIlceResimOnizlemeCiz();
+
+        document.getElementById('ilIlceFormKarti').classList.remove('editing-mode');
+        document.getElementById('ilIlceFormBaslik').textContent = 'Yeni İl / İlçe Kayıt Ekle (Resim & Yazı)';
+        document.getElementById('ilIlceDuzenlemeRozet').classList.remove('visible');
+        document.getElementById('btnIlIlceKaydet').textContent = 'İl / İlçe Kaydını Ekle';
+        document.getElementById('btnIlIlceIptal').style.display = 'none';
+    }
+
+    function sonrakiIlIlceIdUret() {
+        if (ilIlceler.length === 0) return 'L-00001';
+        const max = ilIlceler.reduce((m, item) => {
+            const num = parseInt(String(item.id || '').replace(/\D/g, ''), 10) || 0;
+            return Math.max(m, num);
+        }, 0);
+        return `L-${String(max + 1).padStart(5, '0')}`;
+    }
+
+    function ilIlceKaydetVeyaGuncelle() {
+        const il = document.getElementById('inpIlAdi').value.trim();
+        const ilce = document.getElementById('inpIlceAdi').value.trim();
+        const metin = document.getElementById('inpIlIlceMetin').value.trim();
+
+        if (!il && !ilce) {
+            alert('Lütfen en az il veya ilçe adını girin.');
+            document.getElementById('inpIlAdi').focus();
+            return;
+        }
+        if (!metin) {
+            alert('Lütfen il veya ilçe tanıtım metnini girin.');
+            document.getElementById('inpIlIlceMetin').focus();
+            return;
+        }
+
+        const oncekiIlIlceler = [...ilIlceler];
+        const adayIlIlceler = [...ilIlceler];
+        const altBaslik = document.getElementById('inpIlIlceAltBaslik').value.trim() || bugunStr();
+        const renkTemasi = koyRengiNormalizeEt(document.getElementById('selIlIlceRenk').value, 'amber');
+        const temizResimler = geciciIlIlceResimleri.map(r => ({
+            src: r.src,
+            caption: String(r.caption || '').trim()
+        }));
+
+        if (duzenlenenIlIlceId) {
+            const idx = adayIlIlceler.findIndex(p => p.id === duzenlenenIlIlceId);
+            if (idx !== -1) {
+                adayIlIlceler[idx] = {
+                    ...adayIlIlceler[idx],
+                    il: il || 'İl Belirtilmemiş',
+                    ilce: ilce || 'Merkez',
+                    renkTemasi: renkTemasi,
+                    altBaslik: altBaslik,
+                    metin: metin,
+                    resimler: temizResimler,
+                    notlar: Array.isArray(adayIlIlceler[idx].notlar) ? adayIlIlceler[idx].notlar : []
+                };
+            }
+        } else {
+            adayIlIlceler.unshift({
+                id: sonrakiIlIlceIdUret(),
+                il: il || 'İl Belirtilmemiş',
+                ilce: ilce || 'Merkez',
+                renkTemasi: renkTemasi,
+                altBaslik: altBaslik,
+                metin: metin,
+                resimler: temizResimler,
+                notlar: []
+            });
+        }
+
+        ilIlceler = adayIlIlceler;
+        if (!ilIlceleriKaydet()) {
+            ilIlceler = oncekiIlIlceler;
+            return;
+        }
+
+        ilIlceDuzenlemeyiIptal();
+        ekraniYenile();
+    }
+
+    function ilIlceSlayderiniCiz(item, zamanlayiciyiSifirla = true) {
+        const galeri = document.getElementById('okunanIlIlceResimler');
+        galeri.innerHTML = '';
+        const sayfaBasligi = ilIlceBaslikOlustur(item);
+        const slaytKutusu = sayfaSlayderOlustur(
+            item.resimler,
+            aktifIlIlceSlaytIndex,
+            sayfaBasligi,
+            function(yeniIdx, manuel) {
+                aktifIlIlceSlaytIndex = yeniIdx;
+                ilIlceSlayderiniCiz(item, manuel);
+            },
+            function(resimObj, idx) {
+                gorselOnizlemeAc(resimObj.caption ? `${sayfaBasligi}: ${resimObj.caption}` : `${sayfaBasligi} (${idx + 1})`, resimObj.src);
+            }
+        );
+        galeri.appendChild(slaytKutusu);
+        if (zamanlayiciyiSifirla) {
+            ilIlceOtoSlayderBaslat(item);
+        }
+    }
+
+    function ilIlceAc(id) {
+        const item = ilIlceler.find(p => p.id === id);
+        if (!item) return;
+        sesliOkumayiDurdur();
+        if (koyOtoSlaytZamanlayici) {
+            clearInterval(koyOtoSlaytZamanlayici);
+            koyOtoSlaytZamanlayici = null;
+        }
+        acikIlIlceId = item.id;
+        aktifIlIlceSlaytIndex = 0;
+        ilIlceOkumaTemasiUygula(item.renkTemasi || 'amber');
+        document.getElementById('okunanIlIlceBaslik').textContent = ilIlceBaslikOlustur(item);
+        document.getElementById('okunanIlIlceMeta').textContent = `${item.id} • ${item.altBaslik || ''}`;
+        document.getElementById('okunanIlIlceMetin').textContent = item.metin;
+        document.getElementById('inpIlIlceNotTarih').value = bugunStr();
+
+        ilIlceSlayderiniCiz(item, true);
+        ilIlceNotlariniCiz(item);
+
+        document.getElementById('ilIlceYonetimAlani').style.display = 'none';
+        document.getElementById('ilIlceOkumaKutusu').style.display = 'block';
+        const mainEl = document.querySelector('main');
+        if (mainEl) mainEl.scrollTop = 0;
+    }
+
+    function ilIlceNotlariniCiz(item) {
+        const notlar = Array.isArray(item.notlar) ? item.notlar : [];
+        document.getElementById('ilIlceNotSayac').textContent = notlar.length;
+        const listeEl = document.getElementById('ilIlceNotlarListesi');
+        listeEl.innerHTML = '';
+
+        if (notlar.length === 0) {
+            listeEl.innerHTML = '<p style="font-size:0.82rem; color:var(--text-muted);">Bu il veya ilçe için henüz tarihli not eklenmemiş.</p>';
+            return;
+        }
+
+        notlar.forEach(n => {
+            const div = document.createElement('div');
+            div.className = 'village-note-item';
+            div.innerHTML = `
+                <div style="min-width:0;">
+                    <div class="village-note-date">${htmlKacir(n.tarih || bugunStr())}</div>
+                    <div class="village-note-text">${htmlKacir(n.metin)}</div>
+                </div>
+                <button type="button" class="mini-btn btn-del" onclick="ilIlceNotuSil('${htmlKacir(item.id)}', '${htmlKacir(n.id)}')">Sil</button>
+            `;
+            listeEl.appendChild(div);
+        });
+    }
+
+    function ilIlceNotuEkle() {
+        if (!acikIlIlceId) return;
+        const item = ilIlceler.find(p => p.id === acikIlIlceId);
+        if (!item) return;
+
+        const notMetin = document.getElementById('inpIlIlceNotMetin').value.trim();
+        const notTarih = document.getElementById('inpIlIlceNotTarih').value.trim() || bugunStr();
+        if (!notMetin) {
+            alert('Lütfen kısa not veya gezi gözlemi yazın.');
+            return;
+        }
+
+        const oncekiNotlar = Array.isArray(item.notlar) ? [...item.notlar] : [];
+        item.notlar = [
+            {
+                id: `LN-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+                tarih: notTarih,
+                metin: notMetin
+            },
+            ...oncekiNotlar
+        ];
+
+        if (!ilIlceleriKaydet()) {
+            item.notlar = oncekiNotlar;
+            return;
+        }
+
+        document.getElementById('inpIlIlceNotMetin').value = '';
+        ilIlceNotlariniCiz(item);
+    }
+
+    function ilIlceNotuSil(sayfaId, notId) {
+        const item = ilIlceler.find(p => p.id === sayfaId);
+        if (!item || !Array.isArray(item.notlar)) return;
+        const oncekiNotlar = [...item.notlar];
+        item.notlar = item.notlar.filter(n => n.id !== notId);
+        if (!ilIlceleriKaydet()) {
+            item.notlar = oncekiNotlar;
+            return;
+        }
+        ilIlceNotlariniCiz(item);
+    }
+
+    function ilIlceListesineDon() {
+        sesliOkumayiDurdur();
+        if (ilIlceOtoSlaytZamanlayici) {
+            clearInterval(ilIlceOtoSlaytZamanlayici);
+            ilIlceOtoSlaytZamanlayici = null;
+        }
+        acikIlIlceId = null;
+        aktifIlIlceSlaytIndex = 0;
+        document.getElementById('ilIlceOkumaKutusu').style.display = 'none';
+        document.getElementById('ilIlceYonetimAlani').style.display = 'block';
+    }
+
+    function ilIlceSil(id) {
+        if (!confirm(`${id} kodlu il/ilçe tanıtım sayfası silinsin mi?`)) return;
+        const oncekiIlIlceler = [...ilIlceler];
+        ilIlceler = ilIlceler.filter(p => p.id !== id);
+        if (!ilIlceleriKaydet()) {
+            ilIlceler = oncekiIlIlceler;
+            return;
+        }
+        if (duzenlenenIlIlceId === id) ilIlceDuzenlemeyiIptal();
+        if (acikIlIlceId === id) ilIlceListesineDon();
+        ekraniYenile();
+    }
+
+    function ilIlceSesliOkumaDegistir() {
+        const item = ilIlceler.find(p => p.id === acikIlIlceId);
+        if (!item) return;
+        const metin = `${ilIlceBaslikOlustur(item)}. ${item.metin || ''}`.trim();
+        metniSeslendir(metin, ['btnSesliOku', 'btnSayfaSesliOku', 'btnIlIlceSesliOku']);
+    }
+
+    function ilIlceleriKaydet() {
+        return guvenliLocalStorageYaz(IL_ILCE_KEY, JSON.stringify(ilIlceler));
+    }
+
+    function sonrakiIdUret() {
+        if (kayitlar.length === 0) return '00001';
+        const max = kayitlar.reduce((m, item) => Math.max(m, parseInt(item.id, 10) || 0), 0);
+        return String(max + 1).padStart(5, '0');
+    }
+
+    function kayitDuzenleBaslat(id) {
+        const item = kayitlar.find(k => k.id === id);
+        if (!item) return;
+
+        if (item.mod && MODLAR[item.mod] && item.mod !== aktifMod) {
+            document.getElementById('modSecici').value = item.mod;
+            modDegistir(item.mod, true);
+        }
+
+        duzenlenenId = item.id;
+        geciciGorselBase64 = item.gorsel || '';
+
+        document.getElementById('inpBaslik').value = item.baslik || '';
+        document.getElementById('inpAltBilgi').value = item.altBilgi || '';
+        const katSel = document.getElementById('inpKategori');
+        if (![...katSel.options].some(opt => opt.value === item.kategori)) {
+            katSel.innerHTML += `<option value="${item.kategori}">${item.kategori}</option>`;
+        }
+        katSel.value = item.kategori;
+        document.getElementById('inpTarih').value = item.tarih || bugunStr();
+        document.getElementById('inpEkBilgi').value = item.ekBilgi || '';
+        document.getElementById('inpMetin').value = item.metin || '';
+        document.getElementById('inpGorsel').value = '';
+
+        document.getElementById('formKarti').classList.add('editing-mode');
+        document.getElementById('formBaslik').textContent = `Kaydı Düzenle (#${item.id})`;
+        document.getElementById('duzenlemeRozet').classList.add('visible');
+        document.getElementById('btnKayitEkle').textContent = 'Değişiklikleri Kaydet';
+        document.getElementById('btnDuzenlemeIptal').style.display = 'inline-block';
+
+        sekmeAc('tab-arsiv', document.getElementById('navArsiv'));
+        document.getElementById('inpBaslik').focus();
+    }
+
+    function duzenlemeyiIptalEt() {
+        duzenlenenId = null;
+        geciciGorselBase64 = '';
+        document.getElementById('inpBaslik').value = '';
+        document.getElementById('inpAltBilgi').value = '';
+        document.getElementById('inpEkBilgi').value = '';
+        document.getElementById('inpMetin').value = '';
+        document.getElementById('inpGorsel').value = '';
+        document.getElementById('inpTarih').value = bugunStr();
+
+        document.getElementById('formKarti').classList.remove('editing-mode');
+        document.getElementById('formBaslik').textContent = 'Yeni Kayıt Ekle';
+        document.getElementById('duzenlemeRozet').classList.remove('visible');
+        document.getElementById('btnKayitEkle').textContent = 'Arşive Kaydet';
+        document.getElementById('btnDuzenlemeIptal').style.display = 'none';
+    }
+
+    function kayitKaydetVeyaGuncelle() {
+        const baslik = document.getElementById('inpBaslik').value.trim();
+        if (!baslik) {
+            alert('Lütfen başlık alanını doldurun.');
+            return;
+        }
+
+        const oncekiKayitlar = [...kayitlar];
+        const adayKayitlar = [...kayitlar];
+
+        if (duzenlenenId) {
+            const idx = adayKayitlar.findIndex(k => k.id === duzenlenenId);
+            if (idx !== -1) {
+                adayKayitlar[idx] = {
+                    ...adayKayitlar[idx],
+                    mod: aktifMod,
+                    baslik: baslik,
+                    altBilgi: document.getElementById('inpAltBilgi').value.trim(),
+                    kategori: document.getElementById('inpKategori').value,
+                    tarih: document.getElementById('inpTarih').value.trim() || bugunStr(),
+                    ekBilgi: document.getElementById('inpEkBilgi').value.trim(),
+                    metin: document.getElementById('inpMetin').value.trim(),
+                    gorsel: geciciGorselBase64
+                };
+            }
+        } else {
+            adayKayitlar.unshift({
+                id: sonrakiIdUret(),
+                mod: aktifMod,
+                baslik: baslik,
+                altBilgi: document.getElementById('inpAltBilgi').value.trim(),
+                kategori: document.getElementById('inpKategori').value,
+                tarih: document.getElementById('inpTarih').value.trim() || bugunStr(),
+                ekBilgi: document.getElementById('inpEkBilgi').value.trim(),
+                metin: document.getElementById('inpMetin').value.trim(),
+                gorsel: geciciGorselBase64,
+                favori: false
+            });
+        }
+
+        kayitlar = adayKayitlar;
+        if (!veriyiKaydet()) {
+            kayitlar = oncekiKayitlar;
+            return;
+        }
+
+        duzenlemeyiIptalEt();
+        ekraniYenile();
+    }
+
+    function favoriDegistir(id) {
+        const item = kayitlar.find(k => k.id === id);
+        if (!item) return;
+        const oncekiDurum = item.favori;
+        item.favori = !item.favori;
+        if (!veriyiKaydet()) {
+            item.favori = oncekiDurum;
+            return;
+        }
+        ekraniYenile();
+    }
+
+    function kayitSil(id) {
+        if (!confirm(`#${id} numaralı kayıt silinsin mi?`)) return;
+        const oncekiKayitlar = [...kayitlar];
+        kayitlar = kayitlar.filter(k => k.id !== id);
+        if (!veriyiKaydet()) {
+            kayitlar = oncekiKayitlar;
+            return;
+        }
+        if (duzenlenenId === id) duzenlemeyiIptalEt();
+        ekraniYenile();
+    }
+
+    function detayGoster(id) {
+        const item = kayitlar.find(k => k.id === id);
+        if (!item) return;
+        sesliOkumayiDurdur();
+
+        aktifOkunanMetin = `${item.baslik}. ${item.metin || ''}`.trim();
+        document.getElementById('modalBaslik').textContent = `${item.favori ? '★ ' : ''}#${item.id} - ${item.baslik}`;
+        let html = '';
+        if (item.gorsel) html += `<img src="${item.gorsel}" alt="${htmlKacir(item.baslik)}">`;
+        html += `<p style="color:var(--text-muted); font-size:0.82rem; margin-bottom:10px;">
+            <strong>Tür:</strong> ${htmlKacir(item.kategori)} | <strong>Tarih:</strong> ${htmlKacir(item.tarih)}
+            ${item.altBilgi ? ` | <strong>Bilgi:</strong> ${htmlKacir(item.altBilgi)}` : ''}
+            ${item.ekBilgi ? ` | <strong>Konum/Not:</strong> ${htmlKacir(item.ekBilgi)}` : ''}
+        </p>`;
+        html += `<div>${htmlKacir(item.metin || 'Açıklama girilmemiş.')}</div>`;
+        document.getElementById('modalIcerik').innerHTML = html;
+        document.getElementById('detayModal').classList.add('open');
+    }
+
+    function metniSeslendir(metin, butonIdleri) {
+        if (!('speechSynthesis' in window)) {
+            alert('Bu tarayıcı sesli okuma özelliğini desteklemiyor.');
+            return;
+        }
+        if (sesliOkuyor) {
+            sesliOkumayiDurdur();
+            return;
+        }
+        const temiz = String(metin || '').trim();
+        if (!temiz) return;
+
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(temiz);
+        utterance.lang = 'tr-TR';
+        utterance.rate = 0.98;
+        utterance.onend = function() {
+            sesliOkuyor = false;
+            butonIdleri.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.textContent = 'Sesli Oku';
+            });
+        };
+        utterance.onerror = function() {
+            sesliOkuyor = false;
+            butonIdleri.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.textContent = 'Sesli Oku';
+            });
+        };
+
+        sesliOkuyor = true;
+        butonIdleri.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.textContent = 'Durdur';
+        });
+        window.speechSynthesis.speak(utterance);
+    }
+
+    function sesliOkumaDegistir() {
+        metniSeslendir(aktifOkunanMetin, ['btnSesliOku', 'btnSayfaSesliOku', 'btnIlIlceSesliOku']);
+    }
+
+    function sayfaSesliOkumaDegistir() {
+        const s = sayfalar.find(p => p.id === acikSayfaId);
+        if (!s) return;
+        const metin = `${s.baslik}. ${s.metin || ''}`.trim();
+        metniSeslendir(metin, ['btnSesliOku', 'btnSayfaSesliOku', 'btnIlIlceSesliOku']);
+    }
+
+    function sesliOkumayiDurdur() {
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+        }
+        sesliOkuyor = false;
+        ['btnSesliOku', 'btnSayfaSesliOku', 'btnIlIlceSesliOku'].forEach(id => {
+            const btn = document.getElementById(id);
+            if (btn) btn.textContent = 'Sesli Oku';
+        });
+    }
+
+    function modalKapat() {
+        sesliOkumayiDurdur();
+        document.getElementById('detayModal').classList.remove('open');
+    }
+
+    function ekraniYenile() {
+        const arama = document.getElementById('inpArama').value.toLowerCase().trim();
+        const filtreKat = document.getElementById('inpFiltre').value;
+        const favFiltre = document.getElementById('inpFavoriFiltre').value;
+        const koyArama = (document.getElementById('inpKoyArama').value || '').toLowerCase().trim();
+        const koySirala = document.getElementById('selKoySirala').value || 'YENI';
+        const ilIlceArama = (document.getElementById('inpIlIlceArama').value || '').toLowerCase().trim();
+        const ilIlceSirala = document.getElementById('selIlIlceSirala').value || 'YENI';
+
+        const favoriSayisi = kayitlar.filter(k => k.favori).length;
+        document.getElementById('statToplam').textContent = kayitlar.length;
+        document.getElementById('statFavori').textContent = favoriSayisi;
+        document.getElementById('statSayfa').textContent = ilIlceler.length + sayfalar.length;
+        document.getElementById('statSonTarih').textContent = kayitlar.length > 0 ? kayitlar[0].tarih : '-';
+
+        const dagilimEl = document.getElementById('kategoriDagilimOzet');
+        dagilimEl.innerHTML = '';
+        const sayimlar = {};
+        kayitlar.forEach(k => {
+            const kat = k.kategori || 'Diğer';
+            sayimlar[kat] = (sayimlar[kat] || 0) + 1;
+        });
+        const anahtarlar = Object.keys(sayimlar);
+        if (anahtarlar.length === 0) {
+            dagilimEl.innerHTML = '<span class="cat-pill">Henüz kayıt bulunmuyor</span>';
+        } else {
+            anahtarlar.forEach(kat => {
+                dagilimEl.innerHTML += `<span class="cat-pill">${htmlKacir(kat)}: ${sayimlar[kat]}</span>`;
+            });
+        }
+
+        const suzulmusIlIlceler = ilIlceler
+            .filter(item => {
+                if (!ilIlceArama) return true;
+                const baslik = ilIlceBaslikOlustur(item).toLowerCase();
+                return baslik.includes(ilIlceArama) ||
+                       (item.il && item.il.toLowerCase().includes(ilIlceArama)) ||
+                       (item.ilce && item.ilce.toLowerCase().includes(ilIlceArama)) ||
+                       (item.altBaslik && item.altBaslik.toLowerCase().includes(ilIlceArama)) ||
+                       (item.metin && item.metin.toLowerCase().includes(ilIlceArama));
+            })
+            .sort((a, b) => {
+                const adA = ilIlceBaslikOlustur(a);
+                const adB = ilIlceBaslikOlustur(b);
+                if (ilIlceSirala === 'AZ') return adA.localeCompare(adB, 'tr');
+                if (ilIlceSirala === 'ZA') return adB.localeCompare(adA, 'tr');
+                return 0;
+            });
+
+        const ilIlceSecEl = document.getElementById('selIlIlceSecAc');
+        ilIlceSecEl.innerHTML = '<option value="">Hızlı açmak için il / ilçe seçin...</option>';
+        suzulmusIlIlceler.forEach(item => {
+            ilIlceSecEl.innerHTML += `<option value="${htmlKacir(item.id)}">${htmlKacir(ilIlceBaslikOlustur(item))}</option>`;
+        });
+
+        document.getElementById('ilIlceSayac').textContent = suzulmusIlIlceler.length;
+
+        const suzulmusKoyler = sayfalar
+            .filter(s => {
+                const ad = (s.baslik || s.koyAdi || '').toLowerCase();
+                if (!koyArama) return true;
+                return ad.includes(koyArama) ||
+                       (s.altBaslik && s.altBaslik.toLowerCase().includes(koyArama)) ||
+                       (s.metin && s.metin.toLowerCase().includes(koyArama));
+            })
+            .sort((a, b) => {
+                const adA = String(a.baslik || a.koyAdi || '');
+                const adB = String(b.baslik || b.koyAdi || '');
+                if (koySirala === 'AZ') return adA.localeCompare(adB, 'tr');
+                if (koySirala === 'ZA') return adB.localeCompare(adA, 'tr');
+                return 0;
+            });
+
+        const koySecEl = document.getElementById('selKoySecAc');
+        koySecEl.innerHTML = '<option value="">Köy Seçin</option>';
+        suzulmusKoyler.forEach(s => {
+            const ad = s.baslik || s.koyAdi || '';
+            koySecEl.innerHTML += `<option value="${htmlKacir(s.id)}">${htmlKacir(ad)}</option>`;
+        });
+
+        document.getElementById('sayfaSayac').textContent = suzulmusKoyler.length;
+
+        koyUstOrtaBasligiGuncelle();
+
+        const vitrinSirali = [...kayitlar].sort((a, b) => (b.favori ? 1 : 0) - (a.favori ? 1 : 0));
+        const vitrinEl = document.getElementById('vitrinListesi');
+        vitrinEl.innerHTML = '';
+        vitrinSirali.slice(0, 4).forEach(item => {
+            const imgHtml = item.gorsel ? `<img src="${item.gorsel}" alt="${htmlKacir(item.baslik)}">` : '';
+            vitrinEl.innerHTML += `
+                <div class="showcase-card ${item.favori ? 'is-fav' : ''}" onclick="detayGoster('${htmlKacir(item.id)}')" style="cursor:pointer;">
+                    ${imgHtml}
+                    <span class="tag-cat">${htmlKacir(item.kategori)}</span>
+                    ${item.favori ? '<span class="tag-fav">★ Favori</span>' : ''}
+                    <h4>${htmlKacir(item.baslik)}</h4>
+                    <p>${htmlKacir(item.metin || item.altBilgi || '')}</p>
+                </div>
+            `;
+        });
+
+        const suzulmus = kayitlar.filter(item => {
+            const katOk = (filtreKat === 'HEPSI') || (item.kategori === filtreKat);
+            const favOk = (favFiltre === 'TUMU') || (favFiltre === 'FAVORI' && item.favori);
+            const araOk = item.id.includes(arama) ||
+                          item.baslik.toLowerCase().includes(arama) ||
+                          (item.altBilgi && item.altBilgi.toLowerCase().includes(arama)) ||
+                          (item.metin && item.metin.toLowerCase().includes(arama));
+            return katOk && favOk && araOk;
+        });
+
+        document.getElementById('listeSayac').textContent = suzulmus.length;
+        const listeEl = document.getElementById('arsivListesi');
+        listeEl.innerHTML = '';
+
+        if (suzulmus.length === 0) {
+            listeEl.innerHTML = '<p style="text-align:center; color:var(--text-muted); padding:16px;">Kayıt bulunamadı.</p>';
+            return;
+        }
+
+        suzulmus.forEach(item => {
+            const thumbHtml = item.gorsel ? `<img src="${item.gorsel}" class="entry-thumb" onclick="gorselOnizlemeAc('${htmlKacir(item.baslik).replace(/'/g, "\\'")}', '${item.gorsel}')">` : '';
+            listeEl.innerHTML += `
+                <div class="entry-card ${item.favori ? 'is-fav' : ''}">
+                    ${thumbHtml}
+                    <div class="entry-body">
+                        <div class="meta-line">
+                            <span class="tag-id">#${htmlKacir(item.id)}</span>
+                            <span class="tag-cat">${htmlKacir(item.kategori)}</span>
+                            ${item.favori ? '<span class="tag-fav">★ Favori</span>' : ''}
+                            <span class="tag-sub">${htmlKacir(item.tarih)}</span>
+                            ${item.ekBilgi ? `<span class="tag-sub">• ${htmlKacir(item.ekBilgi)}</span>` : ''}
+                        </div>
+                        <div class="entry-title">${htmlKacir(item.baslik)}</div>
+                        ${item.altBilgi ? `<div style="font-size:0.8rem; color:var(--accent); margin-bottom:3px;">${htmlKacir(item.altBilgi)}</div>` : ''}
+                        <div class="entry-text">${htmlKacir(item.metin)}</div>
+                    </div>
+                    <div class="entry-actions">
+                        <button type="button" class="mini-btn btn-fav ${item.favori ? 'active' : ''}" onclick="favoriDegistir('${htmlKacir(item.id)}')">${item.favori ? '★ Favori' : '☆ Favori'}</button>
+                        <button type="button" class="mini-btn btn-edit" onclick="kayitDuzenleBaslat('${htmlKacir(item.id)}')">Düzenle</button>
+                        <button type="button" class="mini-btn btn-view" onclick="detayGoster('${htmlKacir(item.id)}')">Oku</button>
+                        <button type="button" class="mini-btn btn-del" onclick="kayitSil('${htmlKacir(item.id)}')">Sil</button>
+                    </div>
+                </div>
+            `;
+        });
+    }
+
+    function veriyiKaydet() {
+        return guvenliLocalStorageYaz(STORAGE_KEY, JSON.stringify(kayitlar));
+    }
+
+    function jsonYedekIndir() {
+        const paket = {
+            ustBaslik: ustBaslikBilgi,
+            ilIlceler: ilIlceler,
+            sayfalar: sayfalar,
+            kayitlar: kayitlar
+        };
+        const blob = new Blob([JSON.stringify(paket, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `arsiv_yedek_${bugunStr().replace(/\./g, '_')}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+    }
+
+    function jsonYedekYukle(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const data = JSON.parse(e.target.result);
+                if (Array.isArray(data)) {
+                    const oncekiKayitlar = [...kayitlar];
+                    kayitlar = data;
+                    if (!veriyiKaydet()) {
+                        kayitlar = oncekiKayitlar;
+                        return;
+                    }
+                    ekraniYenile();
+                    alert('Yedek başarıyla geri yüklendi.');
+                } else if (data && Array.isArray(data.kayitlar)) {
+                    const oncekiKayitlar = [...kayitlar];
+                    const oncekiIlIlceler = [...ilIlceler];
+                    const oncekiSayfalar = [...sayfalar];
+                    const oncekiBaslik = { ...ustBaslikBilgi, resimler: [...(ustBaslikBilgi.resimler || [])] };
+
+                    kayitlar = data.kayitlar;
+                    if (!veriyiKaydet()) {
+                        kayitlar = oncekiKayitlar;
+                        return;
+                    }
+
+                    if (Array.isArray(data.ilIlceler)) {
+                        ilIlceler = ilIlceDizisiniNormalizeEt(data.ilIlceler);
+                        if (!ilIlceleriKaydet()) {
+                            ilIlceler = oncekiIlIlceler;
+                            return;
+                        }
+                    }
+
+                    if (Array.isArray(data.sayfalar)) {
+                        sayfalar = sayfaDizisiniNormalizeEt(data.sayfalar);
+                        if (!sayfalariKaydet()) {
+                            sayfalar = oncekiSayfalar;
+                            return;
+                        }
+                    }
+
+                    if (data.ustBaslik) {
+                        const yuklenenSlaytlar = Array.isArray(data.ustBaslik.resimler)
+                            ? slaytDizisiNormalizeEt(data.ustBaslik.resimler)
+                            : (data.ustBaslik.resim ? [{ src: data.ustBaslik.resim, caption: String(data.ustBaslik.slaytAltyazi || '') }] : []);
+                        const adayBaslik = {
+                            ana: data.ustBaslik.ana || ustBaslikBilgi.ana,
+                            alt: data.ustBaslik.alt || ustBaslikBilgi.alt,
+                            resimler: yuklenenSlaytlar,
+                            slaytSureMs: parseInt(data.ustBaslik.slaytSureMs, 10) || 3500
+                        };
+                        if (!guvenliLocalStorageYaz(HEADER_KEY, JSON.stringify(adayBaslik))) {
+                            ustBaslikBilgi = oncekiBaslik;
+                            return;
+                        }
+                        ustBaslikBilgi = adayBaslik;
+                        aktifSlaytIndex = 0;
+                        ustBaslikUygula();
+                        slaytZamanlayiciBaslat();
+                    }
+
+                    ekraniYenile();
+                    alert('Tüm başlık, il-ilçe, sayfa ve arşiv yedeği geri yüklendi.');
+                }
+            } catch (err) {
+                alert('Geçersiz yedek dosyası.');
+            }
+        };
+        reader.readAsText(file);
+        event.target.value = '';
+    }
+</script>
+
+</body>
+</html>
